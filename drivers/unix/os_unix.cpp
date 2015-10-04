@@ -68,11 +68,11 @@ void OS_Unix::print_error(const char* p_function,const char* p_file,int p_line,c
 	if (p_rationale && p_rationale[0]) {
 
 		print("\E[1;31;40mERROR: %s: \E[1;37;40m%s\n",p_function,p_rationale);
-		print("\E[0;31;40m   At: %s:%i.\E[0;0;37m\n",p_file,p_line);
+		print("\E[0;31;40m   At: %s:%i.\E[0;0;37m\E[0m\n",p_file,p_line);
 
 	} else {
 		print("\E[1;31;40mERROR: %s: \E[1;37;40m%s\n",p_function,p_code);
-		print("\E[0;31;40m   At: %s:%i.\E[0;0;37m\n",p_file,p_line);
+		print("\E[0;31;40m   At: %s:%i.\E[0;0;37m\E[0m\n",p_file,p_line);
 
 	}
 }
