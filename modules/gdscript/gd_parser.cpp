@@ -65,8 +65,10 @@ bool GDParser::_enter_indent_block(BlockNode* p_block) {
 
 
 	if (tokenizer->get_token()!=GDTokenizer::TK_COLON) {
-
-		_set_error("':' expected at end of line.");
+		// report location at the previous token (on the previous line)
+		int error_line = tokenizer->get_token_line(-1);
+		int error_column = tokenizer->get_token_column(-1);
+		_set_error("':' expected at end of line.",error_line,error_column);
 		return false;
 	}
 	tokenizer->advance();
@@ -1940,9 +1942,15 @@ void GDParser::_parse_extends(ClassNode *p_class) {
 
 	p_class->extends_used=true;
 
-	//see if inheritance happens from a file
 	tokenizer->advance();
 
+	if (tokenizer->get_token()==GDTokenizer::TK_BUILT_IN_TYPE && tokenizer->get_token_type()==Variant::OBJECT) {
+		p_class->extends_class.push_back(Variant::get_type_name(Variant::OBJECT));
+		tokenizer->advance();
+		return;
+	}
+
+	// see if inheritance happens from a file
 	if (tokenizer->get_token()==GDTokenizer::TK_CONSTANT) {
 
 		Variant constant = tokenizer->get_token_constant();
@@ -2421,6 +2429,16 @@ void GDParser::_parse_class(ClassNode *p_class) {
 								}; //fallthrough to use the same
 								case Variant::REAL: {
 
+									if (tokenizer->get_token()==GDTokenizer::TK_IDENTIFIER && tokenizer->get_token_identifier()=="EASE") {
+										current_export.hint=PROPERTY_HINT_EXP_EASING;
+										tokenizer->advance();
+										if (tokenizer->get_token()!=GDTokenizer::TK_PARENTHESIS_CLOSE) {
+											_set_error("Expected ')' in hint.");
+											return;
+										}
+										break;
+									}
+
 									float sign=1.0;
 
 									if (tokenizer->get_token()==GDTokenizer::TK_OP_SUB) {
@@ -2571,6 +2589,17 @@ void GDParser::_parse_class(ClassNode *p_class) {
 										}
 										break;
 									}
+
+									if (tokenizer->get_token()==GDTokenizer::TK_IDENTIFIER && tokenizer->get_token_identifier()=="MULTILINE") {
+
+										current_export.hint=PROPERTY_HINT_MULTILINE_TEXT;
+										tokenizer->advance();
+										if (tokenizer->get_token()!=GDTokenizer::TK_PARENTHESIS_CLOSE) {
+											_set_error("Expected ')' in hint.");
+											return;
+										}
+										break;
+									}
 								} break;
 								case Variant::COLOR: {
 
@@ -2607,23 +2636,16 @@ void GDParser::_parse_class(ClassNode *p_class) {
 					} else if (tokenizer->get_token()==GDTokenizer::TK_IDENTIFIER) {
 
 						String identifier = tokenizer->get_token_identifier();
-						if (identifier == "flag") {
-							current_export.type=Variant::INT;
-							current_export.hint=PROPERTY_HINT_ALL_FLAGS;
-						}else if (identifier == "multiline"){
-							current_export.type=Variant::STRING;
-							current_export.hint=PROPERTY_HINT_MULTILINE_TEXT;
-						} else {
-							if (!ObjectTypeDB::is_type(identifier,"Resource")) {
-	
-								current_export=PropertyInfo();
-								_set_error("Export hint not a type or resource.");
-							}
-	
-							current_export.type=Variant::OBJECT;
-							current_export.hint=PROPERTY_HINT_RESOURCE_TYPE;
-							current_export.hint_string=identifier;
+						if (!ObjectTypeDB::is_type(identifier,"Resource")) {
+
+							current_export=PropertyInfo();
+							_set_error("Export hint not a type or resource.");
 						}
+
+						current_export.type=Variant::OBJECT;
+						current_export.hint=PROPERTY_HINT_RESOURCE_TYPE;
+						current_export.hint_string=identifier;
+
 						tokenizer->advance();
 					}
 

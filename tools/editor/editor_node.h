@@ -107,6 +107,7 @@ class EditorNode : public Node {
 	enum MenuOptions {
 	
 		FILE_NEW_SCENE,
+		FILE_NEW_INHERITED_SCENE,
 		FILE_OPEN_SCENE,
 		FILE_SAVE_SCENE,
 		FILE_SAVE_AS_SCENE,
@@ -132,6 +133,7 @@ class EditorNode : public Node {
 		EDIT_UNDO,
 		EDIT_REDO,
 		EDIT_REVERT,
+		TOOLS_ORPHAN_RESOURCES,
 		RESOURCE_NEW,
 		RESOURCE_LOAD,
 		RESOURCE_SAVE,
@@ -172,6 +174,7 @@ class EditorNode : public Node {
 		SOURCES_REIMPORT,
 		DEPENDENCY_LOAD_CHANGED_IMAGES,
 		DEPENDENCY_UPDATE_IMPORTED,
+		SCENE_TAB_CLOSE,
 
 		IMPORT_PLUGIN_BASE=100,
 
@@ -216,6 +219,7 @@ class EditorNode : public Node {
 	//main tabs
 
 	Tabs *scene_tabs;
+	int tab_closing;
 
 
 	int old_split_ofs;
@@ -234,6 +238,7 @@ class EditorNode : public Node {
 	Control *viewport;
 	MenuButton *file_menu;
 	MenuButton *import_menu;
+	MenuButton *tool_menu;
 	ToolButton *export_button;
 	ToolButton *prev_scene;
 	MenuButton *object_menu;
@@ -247,6 +252,7 @@ class EditorNode : public Node {
 	ToolButton *play_scene_button;
 	ToolButton *play_custom_scene_button;
 	MenuButton *debug_button;
+	ToolButton *search_button;
 	TextureProgress *audio_vu;
 	//MenuButton *fileserver_menu;
 
@@ -264,6 +270,9 @@ class EditorNode : public Node {
 	PropertyEditor *property_editor;
 	ScenesDock *scenes_dock;
 	EditorRunNative *run_native;
+
+	HBoxContainer *search_bar;
+	LineEdit *search_box;
 
 	CreateDialog *create_dialog;
 
@@ -313,7 +322,9 @@ class EditorNode : public Node {
 	CenterContainer *tabs_center;
 	EditorQuickOpen *quick_open;
 	EditorQuickOpen *quick_run;
-	Tabs *main_editor_tabs;
+
+	HBoxContainer *main_editor_button_vb;
+	Vector<ToolButton*> main_editor_buttons;
 	Vector<EditorPlugin*> editor_table;
 
 	EditorReImportDialog *reimport_dialog;
@@ -324,6 +335,7 @@ class EditorNode : public Node {
 
 	DependencyErrorDialog *dependency_error;
 	DependencyEditor *dependency_fixer;
+	OrphanResourcesDialog *orphan_resources;
 
 	TabContainer *dock_slot[DOCK_SLOT_MAX];
 	Rect2 dock_select_rect[DOCK_SLOT_MAX];
@@ -460,6 +472,7 @@ class EditorNode : public Node {
 
 	void _cleanup_scene();
 	void _remove_edited_scene();
+	void _remove_scene(int index);
 	bool _find_and_save_resource(RES p_res,Map<RES,bool>& processed,int32_t flags);
 	bool _find_and_save_edited_subresources(Object *obj,Map<RES,bool>& processed,int32_t flags);
 	void _save_edited_subresources(Node* scene,Map<RES,bool>& processed,int32_t flags);
@@ -500,18 +513,30 @@ class EditorNode : public Node {
 	void _dock_split_dragged(int ofs);
 	void _dock_popup_exit();
 	void _scene_tab_changed(int p_tab);
+	void _scene_tab_closed(int p_tab);
 	void _scene_tab_script_edited(int p_tab);
 
 	Dictionary _get_main_scene_state();
 	void _set_main_scene_state(Dictionary p_state);
 
+	int _get_current_main_editor();
+
 	void _save_docks();
 	void _load_docks();
+
+	void _toggle_search_bar(bool p_pressed);
+	void _clear_search_box();
 
 protected:
 	void _notification(int p_what);
 	static void _bind_methods();		
 public:
+
+	enum EditorTable {
+		EDITOR_2D = 0,
+		EDITOR_3D,
+		EDITOR_SCRIPT
+	};
 
 	static EditorNode* get_singleton() { return singleton; }
 
@@ -565,7 +590,7 @@ public:
 
 	void fix_dependencies(const String& p_for_file);
 	void clear_scene() { _cleanup_scene(); }
-	Error load_scene(const String& p_scene,bool p_ignore_broken_deps=false);
+	Error load_scene(const String& p_scene, bool p_ignore_broken_deps=false, bool p_set_inherited=false);
 	Error load_resource(const String& p_scene);
 
 	bool is_scene_open(const String& p_path);

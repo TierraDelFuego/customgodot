@@ -333,7 +333,7 @@ static void _call_##m_type##_##m_method(Variant& r_ret,Variant& p_self,const Var
 	VCALL_LOCALMEM1R(Vector2,dot);
 	VCALL_LOCALMEM1R(Vector2,slide);
 	VCALL_LOCALMEM1R(Vector2,reflect);
-	VCALL_LOCALMEM0R(Vector2,atan2);
+	VCALL_LOCALMEM0R(Vector2,angle);
 //	VCALL_LOCALMEM1R(Vector2,cross);
 
 	VCALL_LOCALMEM0R(Rect2,get_area);
@@ -359,6 +359,8 @@ static void _call_##m_type##_##m_method(Variant& r_ret,Variant& p_self,const Var
 	VCALL_LOCALMEM1R(Vector3, dot);
 	VCALL_LOCALMEM1R(Vector3, cross);
 	VCALL_LOCALMEM0R(Vector3, abs);
+	VCALL_LOCALMEM0R(Vector3, floor);
+	VCALL_LOCALMEM0R(Vector3, ceil);
 	VCALL_LOCALMEM1R(Vector3, distance_to);
 	VCALL_LOCALMEM1R(Vector3, distance_squared_to);
 	VCALL_LOCALMEM1R(Vector3, slide);
@@ -407,6 +409,7 @@ static void _call_##m_type##_##m_method(Variant& r_ret,Variant& p_self,const Var
 	VCALL_LOCALMEM0R(Quat,normalized);
 	VCALL_LOCALMEM0R(Quat,inverse);
 	VCALL_LOCALMEM1R(Quat,dot);
+	VCALL_LOCALMEM1R(Quat,xform);
 	VCALL_LOCALMEM2R(Quat,slerp);
 	VCALL_LOCALMEM2R(Quat,slerpni);
 	VCALL_LOCALMEM4R(Quat,cubic_slerp);
@@ -753,7 +756,7 @@ static void _call_##m_type##_##m_method(Variant& r_ret,Variant& p_self,const Var
 	}
 
 	static void Matrix32_init2(Variant& r_ret,const Variant** p_args) {
-		
+
 		Matrix32 m(*p_args[0], *p_args[1]);
 		r_ret=m;
 	}
@@ -1133,7 +1136,7 @@ void Variant::get_method_list(List<MethodInfo> *p_list) const {
 		if (fd.returns)
 			ret.name="ret";
 		mi.return_val=ret;
-#endif		
+#endif
 
 		p_list->push_back(mi);
 	}
@@ -1288,13 +1291,13 @@ _VariantCall::addfunc(Variant::m_vtype,Variant::m_ret,_SCS(#m_method),VCALL(m_cl
 	ADDFUNC1(STRING,STRING,String,pad_decimals,INT,"digits",varray());
 	ADDFUNC1(STRING,STRING,String,pad_zeros,INT,"digits",varray());
 
-	ADDFUNC0(STRING,STRING,String,to_ascii,varray());
-	ADDFUNC0(STRING,STRING,String,to_utf8,varray());
+	ADDFUNC0(STRING,RAW_ARRAY,String,to_ascii,varray());
+	ADDFUNC0(STRING,RAW_ARRAY,String,to_utf8,varray());
 
 
 	ADDFUNC0(VECTOR2,VECTOR2,Vector2,normalized,varray());
 	ADDFUNC0(VECTOR2,REAL,Vector2,length,varray());
-	ADDFUNC0(VECTOR2,REAL,Vector2,atan2,varray());
+	ADDFUNC0(VECTOR2,REAL,Vector2,angle,varray());
 	ADDFUNC0(VECTOR2,REAL,Vector2,length_squared,varray());
 	ADDFUNC1(VECTOR2,REAL,Vector2,distance_to,VECTOR2,"to",varray());
 	ADDFUNC1(VECTOR2,REAL,Vector2,distance_squared_to,VECTOR2,"to",varray());
@@ -1336,6 +1339,8 @@ _VariantCall::addfunc(Variant::m_vtype,Variant::m_ret,_SCS(#m_method),VCALL(m_cl
 	ADDFUNC1(VECTOR3,REAL,Vector3,dot,VECTOR3,"b",varray());
 	ADDFUNC1(VECTOR3,VECTOR3,Vector3,cross,VECTOR3,"b",varray());
 	ADDFUNC0(VECTOR3,VECTOR3,Vector3,abs,varray());
+	ADDFUNC0(VECTOR3,VECTOR3,Vector3,floor,varray());
+	ADDFUNC0(VECTOR3,VECTOR3,Vector3,ceil,varray());
 	ADDFUNC1(VECTOR3,REAL,Vector3,distance_to,VECTOR3,"b",varray());
 	ADDFUNC1(VECTOR3,REAL,Vector3,distance_squared_to,VECTOR3,"b",varray());
 	ADDFUNC1(VECTOR3,VECTOR3,Vector3,slide,VECTOR3,"by",varray());
@@ -1357,6 +1362,7 @@ _VariantCall::addfunc(Variant::m_vtype,Variant::m_ret,_SCS(#m_method),VCALL(m_cl
 	ADDFUNC0(QUAT,QUAT,Quat,normalized,varray());
 	ADDFUNC0(QUAT,QUAT,Quat,inverse,varray());
 	ADDFUNC1(QUAT,REAL,Quat,dot,QUAT,"b",varray());
+	ADDFUNC1(QUAT,VECTOR3,Quat,xform,VECTOR3,"v",varray());
 	ADDFUNC2(QUAT,QUAT,Quat,slerp,QUAT,"b",REAL,"t",varray());
 	ADDFUNC2(QUAT,QUAT,Quat,slerpni,QUAT,"b",REAL,"t",varray());
 	ADDFUNC4(QUAT,QUAT,Quat,cubic_slerp,QUAT,"b",QUAT,"pre_a",QUAT,"post_b",REAL,"t",varray());
@@ -1535,10 +1541,10 @@ _VariantCall::addfunc(Variant::m_vtype,Variant::m_ret,_SCS(#m_method),VCALL(m_cl
 	ADDFUNC1(TRANSFORM,NIL,Transform,xform,NIL,"v",varray());
 	ADDFUNC1(TRANSFORM,NIL,Transform,xform_inv,NIL,"v",varray());
 
-#ifdef DEBUG_ENABLED	
+#ifdef DEBUG_ENABLED
 	_VariantCall::type_funcs[Variant::TRANSFORM].functions["xform"].returns=true;
 	_VariantCall::type_funcs[Variant::TRANSFORM].functions["xform_inv"].returns=true;
-#endif	
+#endif
 
 	ADDFUNC0(INPUT_EVENT,BOOL,InputEvent,is_pressed,varray());
 	ADDFUNC1(INPUT_EVENT,BOOL,InputEvent,is_action,STRING,"action",varray());
@@ -1635,9 +1641,3 @@ void unregister_variant_methods() {
 
 
 }
-
-
-
-
-
-

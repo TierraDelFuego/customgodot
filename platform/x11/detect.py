@@ -118,6 +118,8 @@ def configure(env):
 	elif (env["target"]=="release_debug"):
 
 		env.Append(CCFLAGS=['-O2','-ffast-math','-DDEBUG_ENABLED'])
+		if (env["debug_release"]=="yes"):
+			env.Append(CCFLAGS=['-g2'])
 
 	elif (env["target"]=="debug"):
 
@@ -179,4 +181,6 @@ def configure(env):
 	if(env["new_wm_api"]=="yes"):
 		env.Append(CPPFLAGS=['-DNEW_WM_API'])
 		env.ParseConfig('pkg-config xinerama --cflags --libs')
+
+	env["x86_opt_gcc"]=True
 

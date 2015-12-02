@@ -29,6 +29,11 @@
 #include "convex_decomp/b2d_decompose.h"
 #endif
 
+#ifdef TOOLS_ENABLED
+#include "pe_bliss/pe_bliss_godot.h"
+#include "platform/windows/export/export.h"
+#endif
+
 #ifdef TREMOR_ENABLED
 #include "teora/audio_stream_ogg.h"
 #endif
@@ -47,10 +52,6 @@
 
 #ifdef THEORA_ENABLED
 #include "theora/video_stream_theora.h"
-#endif
-
-#ifdef THEORAPLAYER_ENABLED
-#include "theoraplayer/video_stream_theoraplayer.h"
 #endif
 
 
@@ -101,10 +102,6 @@ static ResourceFormatLoaderAudioStreamSpeex *speex_stream_loader=NULL;
 
 #ifdef THEORA_ENABLED
 static ResourceFormatLoaderVideoStreamTheora* theora_stream_loader = NULL;
-#endif
-
-#ifdef THEORAPLAYER_ENABLED
-static ResourceFormatLoaderVideoStreamTheoraplayer* theoraplayer_stream_loader = NULL;
 #endif
 
 #ifdef MUSEPACK_ENABLED
@@ -228,12 +225,6 @@ void register_driver_types() {
 	ObjectTypeDB::register_type<VideoStreamTheora>();
 #endif
 
-#ifdef THEORAPLAYER_ENABLED
-	theoraplayer_stream_loader = memnew( ResourceFormatLoaderVideoStreamTheoraplayer );
-	ResourceLoader::add_resource_format_loader(theoraplayer_stream_loader);
-	ObjectTypeDB::register_type<VideoStreamTheoraplayer>();
-#endif
-
 
 #ifdef TOOLS_ENABLED
 #ifdef SQUISH_ENABLED
@@ -246,7 +237,7 @@ void register_driver_types() {
 #ifdef ETC1_ENABLED
 	_register_etc1_compress_func();
 #endif
-
+	
 	initialize_chibi();
 }
 
@@ -272,9 +263,6 @@ void unregister_driver_types() {
 	memdelete (theora_stream_loader);
 #endif
 
-#ifdef THEORAPLAYER_ENABLED
-	memdelete (theoraplayer_stream_loader);
-#endif
 
 #ifdef MUSEPACK_ENABLED
 

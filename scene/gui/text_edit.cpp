@@ -709,7 +709,7 @@ void TextEdit::_notification(int p_what) {
 						if (in_region==-1 && !in_keyword && is_char && !prev_is_char) {
 							
 							int to=j;
-							while(_is_text_char(str[to]) && to<str.length())
+							while(to<str.length() && _is_text_char(str[to]))
 								to++;
 							
 							uint32_t hash = String::hash(&str[j],to-j);
@@ -1094,16 +1094,16 @@ void TextEdit::backspace_at_cursor() {
 }
 
 
-bool TextEdit::_get_mouse_pos(const Point2i& p_mouse, int &r_row, int &r_col) const {
+void TextEdit::_get_mouse_pos(const Point2i& p_mouse, int &r_row, int &r_col) const {
 	
-	int row=p_mouse.y;
-	row-=cache.style_normal->get_margin(MARGIN_TOP);
-	row/=get_row_height();
-	
-	if (row<0 || row>=get_visible_rows())
-		return false;
-	
-	row+=cursor.line_ofs;
+	float rows=p_mouse.y;
+	rows-=cache.style_normal->get_margin(MARGIN_TOP);
+	rows/=get_row_height();
+	int row=cursor.line_ofs+rows;
+
+	if (row<0)
+		row=0;
+
 	int col=0;
 	
 	if (row>=text.size()) {
@@ -1119,7 +1119,6 @@ bool TextEdit::_get_mouse_pos(const Point2i& p_mouse, int &r_row, int &r_col) co
 	
 	r_row=row;
 	r_col=col;
-	return true;
 }
 
 void TextEdit::_input_event(const InputEvent& p_input_event) {
@@ -1177,8 +1176,7 @@ void TextEdit::_input_event(const InputEvent& p_input_event) {
 				if (mb.button_index==BUTTON_LEFT) {
 					
 					int row,col;
-					if (!_get_mouse_pos(Point2i(mb.x,mb.y), row,col))
-						return;
+					_get_mouse_pos(Point2i(mb.x,mb.y), row,col);
 					
 					int prev_col=cursor.column;
 					int prev_line=cursor.line;
@@ -1210,27 +1208,30 @@ void TextEdit::_input_event(const InputEvent& p_input_event) {
 							update();
 						} else {
 
-							if (cursor.line<selection.from_line || (cursor.line==selection.from_line && cursor.column<=selection.from_column)) {
+							if (cursor.line<selection.selecting_line || (cursor.line==selection.selecting_line && cursor.column<selection.selecting_column)) {
+
+								if (selection.shiftclick_left) {
+									SWAP(selection.from_column,selection.to_column);
+									SWAP(selection.from_line,selection.to_line);
+									selection.shiftclick_left = !selection.shiftclick_left;
+								}
 								selection.from_column=cursor.column;
 								selection.from_line=cursor.line;
-							} else if (cursor.line>selection.to_line || (cursor.line==selection.to_line && cursor.column>=selection.to_column)) {
+
+							} else if (cursor.line>selection.selecting_line || (cursor.line==selection.selecting_line && cursor.column>selection.selecting_column)) {
+
+								if (!selection.shiftclick_left) {
+									SWAP(selection.from_column,selection.to_column);
+									SWAP(selection.from_line,selection.to_line);
+									selection.shiftclick_left = !selection.shiftclick_left;
+								}
 								selection.to_column=cursor.column;
 								selection.to_line=cursor.line;
 
-							} else if (!selection.shiftclick_left) {
-
-								selection.from_column=cursor.column;
-								selection.from_line=cursor.line;
 							} else {
-
-								selection.to_column=cursor.column;
-								selection.to_line=cursor.line;
+								selection.active=false;
 							}
 
-							if (selection.from_line>selection.to_line || (selection.from_line==selection.to_line && selection.from_column>selection.to_column)) {
-								SWAP(selection.from_column,selection.to_column);
-								SWAP(selection.from_line,selection.to_line);
-							}
 							update();
 						}
 
@@ -1255,6 +1256,7 @@ void TextEdit::_input_event(const InputEvent& p_input_event) {
 					if (!mb.doubleclick && (OS::get_singleton()->get_ticks_msec()-last_dblclk)<600 && cursor.line==prev_line) {
 						//tripleclick select line
 						select(cursor.line,0,cursor.line,text[cursor.line].length());
+						selection.selecting_column=0;
 						last_dblclk=0;
 						
 					} else if (mb.doubleclick && text[cursor.line].length()) {
@@ -1279,6 +1281,8 @@ void TextEdit::_input_event(const InputEvent& p_input_event) {
 								end+=1;
 							
 							select(cursor.line,beg,cursor.line,end);
+
+							selection.selecting_column=beg;
 						}
 						
 						last_dblclk = OS::get_singleton()->get_ticks_msec();
@@ -1289,7 +1293,6 @@ void TextEdit::_input_event(const InputEvent& p_input_event) {
 				}
 			} else {
 				
-				selection.selecting_mode=Selection::MODE_NONE;
 				// notify to show soft keyboard
 				notification(NOTIFICATION_FOCUS_ENTER);
 			}
@@ -1302,10 +1305,9 @@ void TextEdit::_input_event(const InputEvent& p_input_event) {
 			if (mm.button_mask&BUTTON_MASK_LEFT) {
 				
 				int row,col;
-				if (!_get_mouse_pos(Point2i(mm.x,mm.y), row,col))
-					return;
+				_get_mouse_pos(Point2i(mm.x,mm.y), row,col);
 				
-				if (selection.selecting_mode==Selection::MODE_POINTER) {
+				if (selection.selecting_mode!=Selection::MODE_NONE) {
 					
 					select(selection.selecting_line,selection.selecting_column,row,col);
 					
@@ -1585,7 +1587,7 @@ void TextEdit::_input_event(const InputEvent& p_input_event) {
 					break;
 			}
 			
-			selection.selecting_test=false;
+			selection.selecting_text=false;
 			
 			bool scancode_handled=true;
 			
@@ -1607,6 +1609,13 @@ void TextEdit::_input_event(const InputEvent& p_input_event) {
 							ins+="\t";
 						else
 							break;
+					}
+					if(auto_indent){
+						// indent once again if previous line will end with ':'
+						// (i.e. colon precedes current cursor position)
+						if(cursor.column>0 && text[cursor.line][cursor.column-1]==':') {
+							ins+="\t";
+						}
 					}
 					
 					_insert_text_at_cursor(ins);
@@ -1647,8 +1656,60 @@ void TextEdit::_input_event(const InputEvent& p_input_event) {
 				case KEY_BACKSPACE: {
 					if (readonly)
 						break;
-					backspace_at_cursor();
-					
+
+#ifdef APPLE_STYLE_KEYS
+					if (k.mod.alt) {
+#else
+					if (k.mod.alt) {
+						scancode_handled=false;
+						break;
+					} else if (k.mod.command) {
+#endif
+						int line=cursor.line;
+						int column=cursor.column;
+
+						bool prev_char=false;
+						bool only_whitespace=true;
+
+						while (only_whitespace && line > 0) {
+
+							while (column>0) {
+								CharType c=text[line][column-1];
+
+								if (c != '\t' && c != ' ') {
+									only_whitespace=false;
+									break;
+								}
+
+								column--;
+							}
+
+							if (only_whitespace) {
+								line--;
+								column=text[line].length();
+							}
+						}
+
+						while (column>0) {
+							bool ischar=_is_text_char(text[line][column-1]);
+
+							if (prev_char && !ischar)
+								break;
+
+							prev_char=ischar;
+							column--;
+
+						}
+
+						_remove_text(line, column, cursor.line, cursor.column);
+
+						cursor_set_line(line);
+						cursor_set_column(column);
+
+					} else {
+						backspace_at_cursor();
+					}
+
 				} break;
 				case KEY_LEFT: {
 					
@@ -1789,10 +1850,63 @@ void TextEdit::_input_event(const InputEvent& p_input_event) {
 					if (cursor.line==text.size()-1 && cursor.column==curline_len)
 						break; //nothing to do
 					
-					int next_line = cursor.column<curline_len?cursor.line:cursor.line+1;
-					int next_column = cursor.column<curline_len?(cursor.column+1):0;
+					int next_line=cursor.column<curline_len?cursor.line:cursor.line+1;
+					int next_column;
+
+#ifdef APPLE_STYLE_KEYS
+					if (k.mod.alt) {
+#else
+					if (k.mod.alt) {
+						scancode_handled=false;
+						break;
+					} else if (k.mod.command) {
+#endif
+						int last_line=text.size()-1;
+
+						int line=cursor.line;
+						int column=cursor.column;
+
+						bool prev_char=false;
+						bool only_whitespace=true;
+
+						while (only_whitespace && line < last_line) {
+
+							while (column<text[line].length()) {
+								CharType c=text[line][column];
+
+								if (c != '\t' && c != ' ') {
+									only_whitespace=false;
+									break;
+								}
+
+								column++;
+							}
+
+							if (only_whitespace) {
+								line++;
+								column=0;
+							}
+						}
+
+						while (column<text[line].length()) {
+
+							bool ischar=_is_text_char(text[line][column]);
+
+							if (prev_char && !ischar)
+								break;
+							prev_char=ischar;
+							column++;
+						}
+
+						next_line=line;
+						next_column=column;
+					} else {
+						next_column=cursor.column<curline_len?(cursor.column+1):0;
+					}
+
 					_remove_text(cursor.line,cursor.column,next_line,next_column);
 					update();
+
 				} break;
 #ifdef APPLE_STYLE_KEYS
 				case KEY_HOME: {
@@ -1903,15 +2017,7 @@ void TextEdit::_input_event(const InputEvent& p_input_event) {
 						break;
 					}
 					
-					if (text.size()==1 && text[0].length()==0)
-						break;
-					selection.active=true;
-					selection.from_line=0;
-					selection.from_column=0;
-					selection.to_line=text.size()-1;
-					selection.to_column=text[selection.to_line].length();
-					selection.selecting_mode=Selection::MODE_NONE;
-					update();
+					select_all();
 					
 				} break;
 				case KEY_X: {
@@ -2096,12 +2202,6 @@ void TextEdit::_input_event(const InputEvent& p_input_event) {
 				}
 			}
 			
-			
-			if (!selection.selecting_test) {
-				
-				selection.selecting_mode=Selection::MODE_NONE;
-			}
-			
 			return;
 		} break;
 			
@@ -2113,13 +2213,14 @@ void TextEdit::_input_event(const InputEvent& p_input_event) {
 void TextEdit::_pre_shift_selection() {
 	
 	
-	if (!selection.active || selection.selecting_mode!=Selection::MODE_SHIFT) {
+	if (!selection.active || selection.selecting_mode==Selection::MODE_NONE) {
 		
 		selection.selecting_line=cursor.line;
 		selection.selecting_column=cursor.column;
 		selection.active=true;
-		selection.selecting_mode=Selection::MODE_SHIFT;
 	}
+
+	selection.selecting_mode=Selection::MODE_SHIFT;
 }
 
 void TextEdit::_post_shift_selection() {
@@ -2132,7 +2233,7 @@ void TextEdit::_post_shift_selection() {
 	}
 	
 	
-	selection.selecting_test=true;
+	selection.selecting_text=true;
 }
 
 /**** TEXT EDIT CORE API ****/
@@ -2428,7 +2529,7 @@ void TextEdit::adjust_viewport_to_cursor() {
 	
 }
 
-void TextEdit::cursor_set_column(int p_col) {
+void TextEdit::cursor_set_column(int p_col, bool p_adjust_viewport) {
 	
 	if (p_col<0)
 		p_col=0;
@@ -2439,7 +2540,8 @@ void TextEdit::cursor_set_column(int p_col) {
 	
 	cursor.last_fit_x=get_column_x_offset(cursor.column,get_line(cursor.line));
 	
-	adjust_viewport_to_cursor();
+	if (p_adjust_viewport)
+		adjust_viewport_to_cursor();
 	
 	if (!cursor_changed_dirty) {
 		if (is_inside_tree())
@@ -2450,7 +2552,7 @@ void TextEdit::cursor_set_column(int p_col) {
 }
 
 
-void TextEdit::cursor_set_line(int p_row) {
+void TextEdit::cursor_set_line(int p_row, bool p_adjust_viewport) {
 	
 	if (setting_row)
 		return;
@@ -2466,8 +2568,8 @@ void TextEdit::cursor_set_line(int p_row) {
 	cursor.line=p_row;
 	cursor.column=get_char_pos_for( cursor.last_fit_x, get_line( cursor.line) );
 	
-	
-	adjust_viewport_to_cursor();
+	if (p_adjust_viewport)
+		adjust_viewport_to_cursor();
 	
 	setting_row=false;
 	
@@ -2774,6 +2876,10 @@ bool TextEdit::is_syntax_coloring_enabled() const {
 	return syntax_coloring;
 }
 
+void TextEdit::set_auto_indent(bool p_auto_indent) {
+	auto_indent = p_auto_indent;
+}
+
 void TextEdit::cut() {
 	
 	if (!selection.active)
@@ -2832,9 +2938,14 @@ void TextEdit::select_all() {
 	selection.active=true;
 	selection.from_line=0;
 	selection.from_column=0;
+	selection.selecting_line=0;
+	selection.selecting_column=0;
 	selection.to_line=text.size()-1;
 	selection.to_column=text[selection.to_line].length();
-	selection.selecting_mode=Selection::MODE_NONE;
+	selection.selecting_mode=Selection::MODE_SHIFT;
+	selection.shiftclick_left=true;
+	cursor_set_line( selection.to_line, false );
+	cursor_set_column( selection.to_column, false );
 	update();
 	
 }
@@ -2873,12 +2984,20 @@ void TextEdit::select(int p_from_line,int p_from_column,int p_to_line,int p_to_c
 			
 		} else if (selection.from_column>selection.to_column) {
 			
+			selection.shiftclick_left = false;
 			SWAP( selection.from_column, selection.to_column );
+		} else {
+
+			selection.shiftclick_left = true;
 		}
 	} else if (selection.from_line>selection.to_line) {
 		
+		selection.shiftclick_left = false;
 		SWAP( selection.from_line, selection.to_line );
 		SWAP( selection.from_column, selection.to_column );
+	} else {
+
+		selection.shiftclick_left = true;
 	}
 	
 	
@@ -3502,10 +3621,8 @@ String TextEdit::get_tooltip(const Point2& p_pos) const {
 	if (!tooltip_obj)
 		return Control::get_tooltip(p_pos);
 	int row,col;
-	if (!_get_mouse_pos(p_pos, row,col)) {
-		return Control::get_tooltip(p_pos);
-	}
-	
+	_get_mouse_pos(p_pos, row, col);
+
 	String s = text[row];
 	if (s.length()==0)
 		return Control::get_tooltip(p_pos);
@@ -3568,7 +3685,10 @@ void TextEdit::set_show_line_numbers(bool p_show) {
 	update();
 }
 
+bool TextEdit::is_text_field() const {
 
+    return true;
+}
 void TextEdit::_bind_methods() {
 	
 	
@@ -3681,7 +3801,7 @@ TextEdit::TextEdit()  {
 	selection.selecting_mode=Selection::MODE_NONE;
 	selection.selecting_line=0;
 	selection.selecting_column=0;
-	selection.selecting_test=false;
+	selection.selecting_text=false;
 	selection.active=false;
 	syntax_coloring=false;
 	
@@ -3727,7 +3847,7 @@ TextEdit::TextEdit()  {
 	next_operation_is_complex=false;
 	auto_brace_completion_enabled=false;
 	brace_matching_enabled=false;
-	
+	auto_indent=false;
 }
 
 TextEdit::~TextEdit()

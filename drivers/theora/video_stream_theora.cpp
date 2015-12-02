@@ -178,7 +178,7 @@ void VideoStreamPlaybackTheora::video_write(void){
 
 void VideoStreamPlaybackTheora::clear() {
 
-	if (file_name == "")
+	if (!file)
 		return;
 
 	if(vorbis_p){
@@ -208,6 +208,10 @@ void VideoStreamPlaybackTheora::clear() {
 	frames_pending = 0;
 	videobuf_time = 0;
 
+	if (file) {
+		memdelete(file);
+	}
+	file=NULL;
 	playing = false;
 };
 
@@ -239,7 +243,9 @@ void VideoStreamPlaybackTheora::set_file(const String& p_file) {
 	/* Only interested in Vorbis/Theora streams */
 	int stateflag = 0;
 
-    int audio_track_skip=audio_track;
+	int audio_track_skip=audio_track;
+
+
 	while(!stateflag){
 		int ret=buffer_data();
 		if(ret==0)break;
@@ -265,15 +271,21 @@ void VideoStreamPlaybackTheora::set_file(const String& p_file) {
 				copymem(&to,&test,sizeof(test));
 				theora_p=1;
 			}else if(!vorbis_p && vorbis_synthesis_headerin(&vi,&vc,&op)>=0){
+
+
 				/* it is vorbis */
-                if (audio_track_skip) {
-                    vorbis_info_clear(&vi);
-                    vorbis_comment_clear(&vc);
-                    audio_track_skip--;
-                } else {
-                    copymem(&vo,&test,sizeof(test));
-                    vorbis_p=1;
-                }
+				if (audio_track_skip) {
+					vorbis_info_clear(&vi);
+					vorbis_comment_clear(&vc);
+					ogg_stream_clear(&test);
+					vorbis_info_init(&vi);
+					vorbis_comment_init(&vc);
+
+					audio_track_skip--;
+				} else {
+                                        copymem(&vo,&test,sizeof(test));
+					vorbis_p=1;
+				}
 			}else{
 				/* whatever it is, we don't care about it */
 				ogg_stream_clear(&test);
@@ -392,6 +404,7 @@ void VideoStreamPlaybackTheora::set_file(const String& p_file) {
 		fprintf(stderr,"Ogg logical stream %lx is Vorbis %d channel %ld Hz audio.\n",
 				vo.serialno,vi.channels,vi.rate);
 		//_setup(vi.channels, vi.rate);
+
 	}else{
 		/* tear down the partial vorbis setup */
 		vorbis_info_clear(&vi);
@@ -401,6 +414,7 @@ void VideoStreamPlaybackTheora::set_file(const String& p_file) {
 	playing = false;
 	buffering=true;
 	time=0;
+	audio_frames_wrote=0;
 };
 
 float VideoStreamPlaybackTheora::get_time() const {
@@ -427,12 +441,15 @@ void VideoStreamPlaybackTheora::update(float p_delta) {
 	//print_line("play "+rtos(p_delta));
 	time+=p_delta;
 
-	if (videobuf_time>get_time())
+	if (videobuf_time>get_time()) {
+
 		return; //no new frames need to be produced
+	}
 
 	bool frame_done=false;
+	bool audio_done=false;
 
-	while (!frame_done) {
+	while (!frame_done || !audio_done) {
 		//a frame needs to be produced
 
 		ogg_packet op;
@@ -490,6 +507,17 @@ void VideoStreamPlaybackTheora::update(float p_delta) {
 				audio_pending=true;
 
 
+				if (vd.granulepos>=0) {
+				//	print_line("wrote: "+itos(audio_frames_wrote)+" gpos: "+itos(vd.granulepos));
+				}
+
+				//print_line("mix audio!");
+
+				audio_frames_wrote+=ret-to_read;
+
+				//print_line("AGP: "+itos(vd.granulepos)+" added "+itos(ret-to_read));
+
+
 			} else {
 
 				/* no pending audio; is there a pending packet to decode? */
@@ -503,6 +531,9 @@ void VideoStreamPlaybackTheora::update(float p_delta) {
 				};
 			}
 
+
+			audio_done = videobuf_time < (audio_frames_wrote/float(vi.rate));
+
 			if (buffer_full)
 				break;
 		}
@@ -512,7 +543,7 @@ void VideoStreamPlaybackTheora::update(float p_delta) {
 			if(ogg_stream_packetout(&to,&op)>0){
 
 
-				if(pp_inc){
+				if(false && pp_inc){
 					pp_level+=pp_inc;
 					th_decode_ctl(td,TH_DECCTL_SET_PPLEVEL,&pp_level,
 								  sizeof(pp_level));
@@ -540,16 +571,20 @@ void VideoStreamPlaybackTheora::update(float p_delta) {
 					 keyframing.  Soon enough libtheora will be able to deal
 					 with non-keyframe seeks.  */
 
-					if(videobuf_time>=get_time())
+					if(videobuf_time>=get_time()) {
 						frame_done=true;
-					else{
+						print_line("frame!");
+					} else{
 						/*If we are too slow, reduce the pp level.*/
 						pp_inc=pp_level>0?-1:0;
+						print_line("skip!");
 					}
 				}
 
-			} else
+			} else {
+				print_line("no packet..");
 				break;
+			}
 		}
 
 		if (file && /*!videobuf_ready && */ file->eof_reached()) {
@@ -567,7 +602,9 @@ void VideoStreamPlaybackTheora::update(float p_delta) {
 			}
 		}
 	#else
-		if (!frame_done){
+
+
+		if (!frame_done || !audio_done){
 			//what's the point of waiting for audio to grab a page?
 
 			buffer_data();
@@ -709,8 +746,9 @@ VideoStreamPlaybackTheora::VideoStreamPlaybackTheora() {
 	texture = Ref<ImageTexture>( memnew(ImageTexture ));
 	mix_callback=NULL;
 	mix_udata=NULL;
-    audio_track=0;
+	    audio_track=0;
 	delay_compensation=0;
+	audio_frames_wrote=0;
 };
 
 VideoStreamPlaybackTheora::~VideoStreamPlaybackTheora() {

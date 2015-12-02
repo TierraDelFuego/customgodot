@@ -59,7 +59,7 @@ platform_arg = ARGUMENTS.get("platform", False)
 if (os.name=="posix"):
 	pass
 elif (os.name=="nt"):
-    if (os.getenv("VSINSTALLDIR")==None or platform_arg=="android"):
+	if (os.getenv("VSINSTALLDIR")==None or platform_arg=="android"):
 		custom_tools=['mingw']
 
 env_base=Environment(tools=custom_tools,ENV = {'PATH' : os.environ['PATH']});
@@ -84,6 +84,9 @@ env_base.__class__.disable_module = methods.disable_module
 
 env_base.__class__.add_source_files = methods.add_source_files
 
+env_base["x86_opt_gcc"]=False
+env_base["x86_opt_vc"]=False
+
 customs = ['custom.py']
 
 profile = ARGUMENTS.get("profile", False)
@@ -106,7 +109,7 @@ opts.Add('opus','Build Opus Audio Format Support: (yes/no)','yes')
 opts.Add('minizip','Build Minizip Archive Support: (yes/no)','yes')
 opts.Add('squish','Squish BC Texture Compression in editor (yes/no)','yes')
 opts.Add('theora','Theora Video (yes/no)','yes')
-opts.Add('use_theoraplayer_binary', "Use precompiled binaries from libtheoraplayer for ogg/theora/vorbis (yes/no)", "no")
+opts.Add('theoralib','Theora Video (yes/no)','no')
 opts.Add('freetype','Freetype support in editor','yes')
 opts.Add('speex','Speex Audio (yes/no)','yes')
 opts.Add('xml','XML Save/Load support (yes/no)','yes')
@@ -185,7 +188,7 @@ if selected_platform in platform_list:
 	if env['vsproj']=="yes":
 		env.vs_incs = []
 		env.vs_srcs = []
-		
+
 		def AddToVSProject( sources ):
 			for x in sources:
 				if type(x) == type(""):
@@ -197,12 +200,12 @@ if selected_platform in platform_list:
 					basename = pieces[0]
 					basename = basename.replace('\\\\','/')
 					env.vs_srcs = env.vs_srcs + [basename + ".cpp"]
-					env.vs_incs = env.vs_incs + [basename + ".h"]					
-					#print basename	
-		env.AddToVSProject = AddToVSProject				
-		
+					env.vs_incs = env.vs_incs + [basename + ".h"]
+					#print basename
+		env.AddToVSProject = AddToVSProject
+
 	env.extra_suffix=""
-	
+
 	if env["extra_suffix"] != '' :
 		env.extra_suffix += '.'+env["extra_suffix"]
 
@@ -229,7 +232,7 @@ if selected_platform in platform_list:
 	#must happen after the flags, so when flags are used by configure, stuff happens (ie, ssl on x11)
 	detect.configure(env)
 
-        #env['platform_libsuffix'] = env['LIBSUFFIX']
+	#env['platform_libsuffix'] = env['LIBSUFFIX']
 
 	suffix="."+selected_platform
 
@@ -284,10 +287,11 @@ if selected_platform in platform_list:
 
 	if (env['musepack']=='yes'):
 		env.Append(CPPFLAGS=['-DMUSEPACK_ENABLED']);
-        if (env['openssl']!='no'):
-            env.Append(CPPFLAGS=['-DOPENSSL_ENABLED']);
-            if (env['openssl']=="builtin"):
-                env.Append(CPPPATH=['#drivers/builtin_openssl2'])
+
+	if (env['openssl']!='no'):
+		env.Append(CPPFLAGS=['-DOPENSSL_ENABLED']);
+		if (env['openssl']=="builtin"):
+			env.Append(CPPPATH=['#drivers/builtin_openssl2'])
 
 	if (env["builtin_zlib"]=='yes'):
 		env.Append(CPPPATH=['#drivers/builtin_zlib/zlib'])
@@ -303,8 +307,12 @@ if selected_platform in platform_list:
 	if (env['opus']=='yes'):
 		env.Append(CPPFLAGS=['-DOPUS_ENABLED']);
 
+
 	if (env['theora']=='yes'):
-		env.Append(CPPFLAGS=['-DTHEORA_ENABLED']);
+		env['theoralib']='yes'
+		env.Append(CPPFLAGS=['-DTHEORA_ENABLED']);		
+	if (env['theoralib']=='yes'):
+		env.Append(CPPFLAGS=['-DTHEORALIB_ENABLED']);
 
 	if (env['png']=='yes'):
 		env.Append(CPPFLAGS=['-DPNG_ENABLED']);
@@ -337,7 +345,7 @@ if selected_platform in platform_list:
 
 	if (env['colored']=='yes'):
 		methods.colored(sys,env)
-		
+
 	if (env['etc1']=='yes'):
 		env.Append(CPPFLAGS=['-DETC1_ENABLED'])
 
@@ -356,22 +364,22 @@ if selected_platform in platform_list:
 	SConscript("main/SCsub")
 
 	SConscript("platform/"+selected_platform+"/SCsub"); # build selected platform
-	
-	# Microsoft Visual Studio Project Generation			
-	if (env['vsproj'])=="yes":		
-	
+
+	# Microsoft Visual Studio Project Generation
+	if (env['vsproj'])=="yes":
+
 		AddToVSProject(env.core_sources)
 		AddToVSProject(env.main_sources)
-		AddToVSProject(env.modules_sources)	
+		AddToVSProject(env.modules_sources)
 		AddToVSProject(env.scene_sources)
 		AddToVSProject(env.servers_sources)
 		AddToVSProject(env.tool_sources)
-		
+
 		#env['MSVS_VERSION']='9.0'
 		env['MSVSBUILDCOM'] = "scons platform=" + selected_platform + " target=" + env["target"] + " bits=" + env["bits"] + " tools=yes"
 		env['MSVSREBUILDCOM'] = "scons platform=" + selected_platform + " target=" + env["target"] + " bits=" + env["bits"] + " tools=yes vsproj=true"
 		env['MSVSCLEANCOM'] = "scons --clean platform=" + selected_platform + " target=" + env["target"] + " bits=" + env["bits"] + " tools=yes"
-			
+
 		debug_variants = ['Debug|Win32']+['Debug|x64']
 		release_variants = ['Release|Win32']+['Release|x64']
 		release_debug_variants = ['Release_Debug|Win32']+['Release_Debug|x64']
@@ -382,11 +390,11 @@ if selected_platform in platform_list:
 		targets = debug_targets + release_targets + release_debug_targets
 		msvproj = env.MSVSProject(target = ['#godot' + env['MSVSPROJECTSUFFIX'] ],
 								incs = env.vs_incs,
-								srcs = env.vs_srcs, 
-								runfile = targets, 
-								buildtarget = targets, 
-								auto_build_solution=1, 
-								variant = variants) 		
+								srcs = env.vs_srcs,
+								runfile = targets,
+								buildtarget = targets,
+								auto_build_solution=1,
+								variant = variants)
 
 else:
 

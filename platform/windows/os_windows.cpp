@@ -1350,7 +1350,9 @@ void OS_Windows::finalize() {
 		memdelete(main_loop);
 
 	main_loop=NULL;
-	
+
+	memdelete(input);
+
 	visual_server->finish();
 	memdelete(visual_server);
 #ifdef OPENGL_ENABLED
@@ -1373,11 +1375,10 @@ void OS_Windows::finalize() {
 //		memdelete(debugger_connection_console);
 //}
 
-	audio_server->finish();
-	memdelete(audio_server);
 	memdelete(sample_manager);
 
-	memdelete(input);
+	audio_server->finish();
+	memdelete(audio_server);
 
 	physics_server->finish();
 	memdelete(physics_server);
@@ -1764,73 +1765,96 @@ bool OS_Windows::is_window_maximized() const{
 }
 
 
-void OS_Windows::print_error(const char* p_function,const char* p_file,int p_line,const char *p_code,const char*p_rationale,ErrorType p_type) {
+void OS_Windows::print_error(const char* p_function, const char* p_file, int p_line, const char* p_code, const char* p_rationale, ErrorType p_type) {
 
-	HANDLE hCon=GetStdHandle(STD_OUTPUT_HANDLE);
-	if (!hCon || hCon==INVALID_HANDLE_VALUE) {
-		if (p_rationale && p_rationale[0]) {
+	HANDLE hCon = GetStdHandle(STD_OUTPUT_HANDLE);
+	if (!hCon || hCon == INVALID_HANDLE_VALUE) {
 
-			print("\E[1;31;40mERROR: %s: \E[1;37;40m%s\n",p_function,p_rationale);
-			print("\E[0;31;40m   At: %s:%i.\E[0;0;37m\n",p_file,p_line);
+		const char* err_details;
+		if (p_rationale && p_rationale[0])
+			err_details = p_rationale;
+		else
+			err_details = p_code;
 
-		} else {
-			print("\E[1;31;40mERROR: %s: \E[1;37;40m%s\n",p_function,p_code);
-			print("\E[0;31;40m   At: %s:%i.\E[0;0;37m\n",p_file,p_line);
-
+		switch(p_type) {
+			case ERR_ERROR:
+				print("ERROR: %s: %s\n", p_function, err_details);
+				print("   At: %s:%i\n", p_file, p_line);
+				break;
+			case ERR_WARNING:
+				print("WARNING: %s: %s\n", p_function, err_details);
+				print("     At: %s:%i\n", p_file, p_line);
+				break;
+			case ERR_SCRIPT:
+				print("SCRIPT ERROR: %s: %s\n", p_function, err_details);
+				print("          At: %s:%i\n", p_file, p_line);
+				break;
 		}
+
 	} else {
 
 		CONSOLE_SCREEN_BUFFER_INFO sbi; //original
-		GetConsoleScreenBufferInfo(hCon,&sbi);
+		GetConsoleScreenBufferInfo(hCon, &sbi);
 
-		SetConsoleTextAttribute(hCon,sbi.wAttributes);
+		WORD current_fg = sbi.wAttributes & (FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+		WORD current_bg = sbi.wAttributes & (BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
 
-
-
-		uint32_t basecol=0;
+		uint32_t basecol = 0;
 		switch(p_type) {
 			case ERR_ERROR: basecol = FOREGROUND_RED; break;
-			case ERR_WARNING: basecol = FOREGROUND_RED|FOREGROUND_GREEN; break;
-			case ERR_SCRIPT: basecol = FOREGROUND_GREEN; break;
+			case ERR_WARNING: basecol = FOREGROUND_RED | FOREGROUND_GREEN; break;
+			case ERR_SCRIPT: basecol = FOREGROUND_RED | FOREGROUND_BLUE; break;
 		}
+
+		basecol |= current_bg;
 
 		if (p_rationale && p_rationale[0]) {
 
-			SetConsoleTextAttribute(hCon,basecol|FOREGROUND_INTENSITY);
-
-
+			SetConsoleTextAttribute(hCon, basecol | FOREGROUND_INTENSITY);
 			switch(p_type) {
 				case ERR_ERROR: print("ERROR: "); break;
 				case ERR_WARNING: print("WARNING: "); break;
 				case ERR_SCRIPT: print("SCRIPT ERROR: "); break;
 			}
 
-			SetConsoleTextAttribute(hCon,FOREGROUND_RED|FOREGROUND_BLUE|FOREGROUND_GREEN|FOREGROUND_INTENSITY);
-			print(" %s\n",p_rationale);
-			SetConsoleTextAttribute(hCon,basecol);
-			print("At: ");
-			SetConsoleTextAttribute(hCon,FOREGROUND_RED|FOREGROUND_BLUE|FOREGROUND_GREEN);
-			print(" %s:%i\n",p_file,p_line);
+			SetConsoleTextAttribute(hCon, current_fg | current_bg | FOREGROUND_INTENSITY);
+			print("%s\n", p_rationale);
 
+			SetConsoleTextAttribute(hCon, basecol);
+			switch (p_type) {
+				case ERR_ERROR: print("   At: "); break;
+				case ERR_WARNING: print("     At: "); break;
+				case ERR_SCRIPT: print("          At: "); break;
+			}
+
+			SetConsoleTextAttribute(hCon, current_fg | current_bg);
+			print("%s:%i\n", p_file, p_line);
 
 		} else {
-			SetConsoleTextAttribute(hCon,basecol|FOREGROUND_INTENSITY);
+
+			SetConsoleTextAttribute(hCon, basecol | FOREGROUND_INTENSITY);
 			switch(p_type) {
-				case ERR_ERROR: print("ERROR: %s: ",p_function); break;
-				case ERR_WARNING: print("WARNING: %s: ",p_function); break;
-				case ERR_SCRIPT: print("SCRIPT ERROR: %s: ",p_function); break;
+				case ERR_ERROR: print("ERROR: %s: ", p_function); break;
+				case ERR_WARNING: print("WARNING: %s: ", p_function); break;
+				case ERR_SCRIPT: print("SCRIPT ERROR: %s: ", p_function); break;
 			}
-			SetConsoleTextAttribute(hCon,FOREGROUND_RED|FOREGROUND_BLUE|FOREGROUND_GREEN|FOREGROUND_INTENSITY);
-			print(" %s\n",p_code);
-			SetConsoleTextAttribute(hCon,basecol);
-			print("At: ");
-			SetConsoleTextAttribute(hCon,FOREGROUND_RED|FOREGROUND_BLUE|FOREGROUND_GREEN);
-			print(" %s:%i\n",p_file,p_line);
+
+			SetConsoleTextAttribute(hCon, current_fg | current_bg | FOREGROUND_INTENSITY);
+			print("%s\n", p_code);
+
+			SetConsoleTextAttribute(hCon, basecol);
+			switch (p_type) {
+				case ERR_ERROR: print("   At: "); break;
+				case ERR_WARNING: print("     At: "); break;
+				case ERR_SCRIPT: print("          At: "); break;
+			}
+
+			SetConsoleTextAttribute(hCon, current_fg | current_bg);
+			print("%s:%i\n", p_file, p_line);
 		}
 
-		SetConsoleTextAttribute(hCon,sbi.wAttributes);
+		SetConsoleTextAttribute(hCon, sbi.wAttributes);
 	}
-
 }
 
 

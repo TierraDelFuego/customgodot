@@ -55,7 +55,7 @@ class TextEdit : public Control  {
 
 		Mode selecting_mode;
 		int selecting_line,selecting_column;
-		bool selecting_test;
+		bool selecting_text;
 
 
 		bool active;
@@ -213,6 +213,7 @@ class TextEdit : public Control  {
 	
 	bool auto_brace_completion_enabled;
 	bool brace_matching_enabled;
+	bool auto_indent;
 	bool cut_copy_line;
 
 	uint64_t last_dblclk;
@@ -270,7 +271,7 @@ class TextEdit : public Control  {
 	void _confirm_completion();
 	void _update_completion_candidates();
 
-	bool _get_mouse_pos(const Point2i& p_mouse, int &r_row, int &r_col) const;
+	void _get_mouse_pos(const Point2i& p_mouse, int &r_row, int &r_col) const;
 
 protected:
 
@@ -323,9 +324,10 @@ public:
 		brace_matching_enabled=p_enabled;
 		update();
 	}
+	void set_auto_indent(bool p_auto_indent);
 
-	void cursor_set_column(int p_col);
-	void cursor_set_line(int p_row);
+	void cursor_set_column(int p_col, bool p_adjust_viewport=true);
+	void cursor_set_line(int p_row, bool p_adjust_viewport=true);
 
 	int cursor_get_column() const;
 	int cursor_get_line() const;
@@ -393,6 +395,7 @@ public:
 
 	String get_text_for_completion();
 
+    virtual bool is_text_field() const;
 	TextEdit();
 	~TextEdit();
 };

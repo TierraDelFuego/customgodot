@@ -193,6 +193,8 @@ void ProjectExportDialog::_prop_edited(String what) {
 
 	_save_export_cfg();
 
+	_validate_platform();
+
 }
 
 void ProjectExportDialog::_filters_edited(String what) {
@@ -249,6 +251,13 @@ void ProjectExportDialog::_script_edited(Variant v) {
 	EditorNode::get_undo_redo()->commit_action();
 	updating_script=false;
 
+
+}
+
+void ProjectExportDialog::_sample_convert_edited(int what) {
+	EditorImportExport::get_singleton()->sample_set_action( EditorImportExport::SampleAction(sample_mode->get_selected()));
+	EditorImportExport::get_singleton()->sample_set_max_hz(  sample_max_hz->get_val() );
+	EditorImportExport::get_singleton()->sample_set_trim(  sample_trim->is_pressed() );
 
 }
 
@@ -318,6 +327,15 @@ void ProjectExportDialog::_notification(int p_what) {
 			_update_group_list();
 			_update_group();
 			_update_group_tree();
+
+			sample_mode->select( EditorImportExport::get_singleton()->sample_get_action() );
+			sample_max_hz->set_val( EditorImportExport::get_singleton()->sample_get_max_hz() );
+			sample_trim->set_pressed( EditorImportExport::get_singleton()->sample_get_trim() );
+
+			sample_mode->connect("item_selected",this,"_sample_convert_edited");
+			sample_max_hz->connect("value_changed",this,"_sample_convert_edited");
+			sample_trim->connect("toggled",this,"_sample_convert_edited");
+
 
 		} break;
 		case NOTIFICATION_EXIT_TREE: {
@@ -473,6 +491,18 @@ Error ProjectExportDialog::export_platform(const String& p_platform, const Strin
 	Ref<EditorExportPlatform> exporter = EditorImportExport::get_singleton()->get_export_platform(p_platform);
 	if (exporter.is_null()) {
 		ERR_PRINT("Invalid platform for export");
+
+		List<StringName> platforms;
+		EditorImportExport::get_singleton()->get_export_platforms(&platforms);
+		print_line("Valid export plaftorms are:");
+		for (List<StringName>::Element *E=platforms.front();E;E=E->next())
+			print_line("    \""+E->get()+"\"");
+
+		if (p_quit_after) {
+			OS::get_singleton()->set_exit_code(255);
+			get_tree()->quit();
+		}
+
 		return ERR_INVALID_PARAMETER;
 	}
 	Error err = exporter->export_project(p_path,p_debug);
@@ -1045,6 +1075,7 @@ void ProjectExportDialog::_bind_methods() {
 	ObjectTypeDB::bind_method(_MD("_group_select_none"),&ProjectExportDialog::_group_select_none);
 	ObjectTypeDB::bind_method(_MD("_script_edited"),&ProjectExportDialog::_script_edited);
 	ObjectTypeDB::bind_method(_MD("_update_script"),&ProjectExportDialog::_update_script);
+	ObjectTypeDB::bind_method(_MD("_sample_convert_edited"),&ProjectExportDialog::_sample_convert_edited);
 
 
 	ObjectTypeDB::bind_method(_MD("export_platform"),&ProjectExportDialog::export_platform);
@@ -1315,6 +1346,22 @@ ProjectExportDialog::ProjectExportDialog(EditorNode *p_editor) {
 	button_reload->connect("pressed",this,"_rescan");
 	hbc->add_child(button_reload);
 */
+
+
+	sample_vbox = memnew( VBoxContainer );
+	sample_vbox->set_name("Samples");
+	sections->add_child(sample_vbox);
+	sample_mode = memnew( OptionButton );
+	sample_vbox->add_margin_child("Sample Conversion Mode: (.wav files):",sample_mode);
+	sample_mode->add_item("Keep");
+	sample_mode->add_item("Compress (RAM - IMA-ADPCM)");
+	sample_max_hz = memnew( SpinBox );
+	sample_max_hz->set_max(192000);
+	sample_max_hz->set_min(8000);
+	sample_vbox->add_margin_child("Sampling Rate Limit: (hz)",sample_max_hz);
+	sample_trim = memnew( CheckButton );
+	sample_trim->set_text("Trim");
+	sample_vbox->add_margin_child("Trailing Silence:",sample_trim);
 
 	script_vbox = memnew( VBoxContainer );
 	script_vbox->set_name("Script");

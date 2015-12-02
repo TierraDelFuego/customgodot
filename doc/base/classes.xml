@@ -1603,7 +1603,7 @@
 	Axis-Aligned Bounding Box.
 	</brief_description>
 	<description>
-	AABB provides an 3D Axis-Aligned Bounding Box. It consists of a position and a size, and several utility functions. It is typically used for simple (fast) overlap tests.
+	AABB provides an 3D Axis-Aligned Bounding Box. It consists of a position, a size, and several utility functions. It is typically used for simple (fast) overlap tests.
 	</description>
 	<methods>
 		<method name="encloses">
@@ -1628,7 +1628,7 @@
 			<return type="float">
 			</return>
 			<description>
-			Get the area inside the [AABB].
+			Get the area of the [AABB].
 			</description>
 		</method>
 		<method name="get_endpoint">
@@ -1697,7 +1697,7 @@
 			<argument index="0" name="by" type="float">
 			</argument>
 			<description>
-			Return a copy of the AABB grown a given a mount of units towards all the sides.
+			Return a copy of the [AABB] grown a given amount of units towards all the sides.
 			</description>
 		</method>
 		<method name="has_no_area">
@@ -1747,7 +1747,7 @@
 			<argument index="0" name="plane" type="Plane">
 			</argument>
 			<description>
-			Return true if the AABB is at both sides of a plane.
+			Return true if the [AABB] is at both sides of a plane.
 			</description>
 		</method>
 		<method name="intersects_segment">
@@ -1766,7 +1766,7 @@
 			<argument index="0" name="with" type="AABB">
 			</argument>
 			<description>
-			Combine this [AABB] with another one, a larger one is returned that contains both.
+			Combine this [AABB] with another, a larger one is returned that contains both.
 			</description>
 		</method>
 		<method name="AABB">
@@ -3197,6 +3197,24 @@
 			<description>
 			</description>
 		</method>
+		<method name="set_animation_process_mode">
+			<argument index="0" name="mode" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="get_animation_process_mode" qualifiers="const">
+			<return type="int">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="advance">
+			<argument index="0" name="delta" type="float">
+			</argument>
+			<description>
+			</description>
+		</method>
 		<method name="reset">
 			<description>
 			</description>
@@ -3766,6 +3784,7 @@
 			<argument index="0" name="value" type="var">
 			</argument>
 			<description>
+			Append an element at the end of the array (alias of [method push_back]).
 			</description>
 		</method>
 		<method name="clear">
@@ -3784,6 +3803,7 @@
 			<argument index="0" name="value" type="var">
 			</argument>
 			<description>
+			Remove the first occurence of a value from the array.
 			</description>
 		</method>
 		<method name="find">
@@ -3792,6 +3812,7 @@
 			<argument index="0" name="value" type="var">
 			</argument>
 			<description>
+			Searches the array for a value and returns its index or -1 if not found.
 			</description>
 		</method>
 		<method name="hash">
@@ -3812,12 +3833,14 @@
 		</method>
 		<method name="invert">
 			<description>
+			Reverse the order of the elements in the array (so first element will now be the last).
 			</description>
 		</method>
 		<method name="is_shared">
 			<return type="bool">
 			</return>
 			<description>
+			Get whether this is a shared array instance.
 			</description>
 		</method>
 		<method name="push_back">
@@ -3850,6 +3873,7 @@
 		</method>
 		<method name="sort">
 			<description>
+			Sort the array using natural order.
 			</description>
 		</method>
 		<method name="sort_custom">
@@ -3858,6 +3882,7 @@
 			<argument index="1" name="func" type="String">
 			</argument>
 			<description>
+			Sort the array using a custom method. The arguments are an object that holds the method and the name of such method. The custom method receives two arguments (a pair of elements from the array) and must return true if the first argument is less than the second, and return false otherwise.
 			</description>
 		</method>
 		<method name="Array">
@@ -4346,7 +4371,7 @@
 			Stop a given voice.
 			</description>
 		</method>
-		<method name="free">
+		<method name="free_rid">
 			<argument index="0" name="rid" type="RID">
 			</argument>
 			<description>
@@ -5470,7 +5495,7 @@
 		</constant>
 	</constants>
 </class>
-<class name="ButtonGroup" inherits="Control" category="Core">
+<class name="ButtonGroup" inherits="BoxContainer" category="Core">
 	<brief_description>
 	Group of Buttons.
 	</brief_description>
@@ -5516,6 +5541,10 @@
 	</methods>
 	<constants>
 	</constants>
+	<theme_items>
+		<theme_item name="panel" type="StyleBox">
+		</theme_item>
+	</theme_items>
 </class>
 <class name="Camera" inherits="Spatial" category="Core">
 	<brief_description>
@@ -5905,7 +5934,7 @@
 	<description>
 	Base class of anything 2D. Canvas items are laid out in a tree and children inherit and extend the transform of their parent. CanvasItem is extended by [Control], for anything GUI related, and by [Node2D] for anything 2D engine related.
 	Any CanvasItem can draw. For this, the "update" function must be called, then NOTIFICATION_DRAW will be received on idle time to request redraw. Because of this, canvas items don't need to be redraw on every frame, improving the performance significan'tly. Several functions for drawing on the CanvasItem are provided (see draw_* functions). They can only be used inside the notification, signal or _draw() overrided function, though.
-	Canvas items are draw in tree order. By default, children are on top of their parents so a root CanvasItem will be drawn behind everything (this can be changed per item though). 
+	Canvas items are draw in tree order. By default, children are on top of their parents so a root CanvasItem will be drawn behind everything (this can be changed per item though).
 	Canvas items can also be hidden (hiding also their subtree). They provide many means for changing standard parameters such as opacity (for it and the subtree) and self opacity, blend mode.
 	Ultimately, a transform notification can be requested, which will notify the node that its global position changed in case the parent tree changed.
 	</description>
@@ -6621,7 +6650,7 @@
 			<argument index="0" name="radius" type="float">
 			</argument>
 			<description>
-			Radius of the [CapsuleShape2D].
+			Set the radius of the [CapsuleShape2D].
 			</description>
 		</method>
 		<method name="get_radius" qualifiers="const">
@@ -6635,7 +6664,7 @@
 			<argument index="0" name="height" type="float">
 			</argument>
 			<description>
-			Height of the [CapsuleShape2D].
+			Set the height of the [CapsuleShape2D].
 			</description>
 		</method>
 		<method name="get_height" qualifiers="const">
@@ -6940,7 +6969,7 @@
 	Base node for 2D collisionables.
 	</brief_description>
 	<description>
-	CollisionObject2D is the base class for 2D physics collisionables. They can hold any number of 2D collision shapes. Usually, they are edited by placing CollisionBody2D and CollisionPolygon2D nodes as children. Such nodes are for reference ant not present outside the editor, so code should use the regular shape API.
+	CollisionObject2D is the base class for 2D physics collisionables. They can hold any number of 2D collision shapes. Usually, they are edited by placing [CollisionBody2D] and [CollisionPolygon2D] nodes as children. Such nodes are for reference and not present outside the editor, so code should use the regular shape API.
 	</description>
 	<methods>
 		<method name="_input_event" qualifiers="virtual">
@@ -7136,58 +7165,69 @@
 </class>
 <class name="CollisionPolygon2D" inherits="Node2D" category="Core">
 	<brief_description>
-	Editor-Only class.
+	Editor-only class for easy editing of collision polygons.
 	</brief_description>
 	<description>
-	Editor-Only class. This is not present when running the game. It's used in the editor to properly edit and position collision shapes in [CollisionObject2D]. This is not accessible from regular code. This class is for editing custom shape polygons.
+	Editor-only class. This is not present when running the game. It's used in the editor to properly edit and position collision shapes in [CollisionObject2D]. This is not accessible from regular code. This class is for editing custom shape polygons.
 	</description>
 	<methods>
 		<method name="set_polygon">
 			<argument index="0" name="polygon" type="Vector2Array">
 			</argument>
 			<description>
+			Set the array of points forming the polygon.
+			When editing the point list via the editor, depending on [method get_build_mode], it has to be a list of points (for [code]build_mode[/code]=0), or a list of lines (for [code]build_mode[/code]=1). In the second case, the even elements of the array define the start point of the line, and the odd elements the end point.
 			</description>
 		</method>
 		<method name="get_polygon" qualifiers="const">
 			<return type="Vector2Array">
 			</return>
 			<description>
+			Return the list of points that define the polygon.
 			</description>
 		</method>
 		<method name="set_build_mode">
 			<argument index="0" name="arg0" type="int">
 			</argument>
 			<description>
+			Set whether the polygon is to be a [ConvexPolygon2D] ([code]build_mode[/code]=0), or a [ConcavePolygon2D] ([code]build_mode[/code]=1).
 			</description>
 		</method>
 		<method name="get_build_mode" qualifiers="const">
 			<return type="int">
 			</return>
 			<description>
+			Return whether the polygon is a [ConvexPolygon2D] ([code]build_mode[/code]=0), or a [ConcavePolygon2D] ([code]build_mode[/code]=1).
 			</description>
 		</method>
 		<method name="set_trigger">
 			<argument index="0" name="arg0" type="bool">
 			</argument>
 			<description>
+			Set whether this polygon is a trigger. A trigger polygon detects collisions, but is otherwise unaffected by physics (i.e. colliding objects will not get blocked).
 			</description>
 		</method>
 		<method name="is_trigger" qualifiers="const">
 			<return type="bool">
 			</return>
 			<description>
+			Return whether this polygon is a trigger.
 			</description>
 		</method>
 		<method name="get_collision_object_first_shape" qualifiers="const">
 			<return type="int">
 			</return>
 			<description>
+			Return the index of the first shape generated by the editor.
+			When [code]build_mode[/code] is set to generate convex polygons, the shape shown in the editor may be decomopsed into many convex polygons. In that case, a range of indexes is needed to directly access the [Shape2D]s.
+			When [code]build_mode[/code] is set to generate concave polygons, there is only one [Shape2D] generated, so the start index and the end index are the same.
 			</description>
 		</method>
 		<method name="get_collision_object_last_shape" qualifiers="const">
 			<return type="int">
 			</return>
 			<description>
+			Return the index of the last shape generated by the editor.
 			</description>
 		</method>
 	</methods>
@@ -7246,40 +7286,45 @@
 </class>
 <class name="CollisionShape2D" inherits="Node2D" category="Core">
 	<brief_description>
-	Editor-Only class.
+	Editor-only class for easy editing of shapes.
 	</brief_description>
 	<description>
-	Editor-Only class. This is not present when running the game. It's used in the editor to properly edit and position collision shapes in [CollisionObject2D]. This is not accessible from regular code.
+	Editor-only class. This is not present when running the game. It's used in the editor to properly edit and position collision shapes in [CollisionObject2D]. This is not accessible from regular code.
 	</description>
 	<methods>
 		<method name="set_shape">
 			<argument index="0" name="shape" type="Object">
 			</argument>
 			<description>
+			Set this shape's [Shape2D]. This will not appear as a node, but can be directly edited as a property.
 			</description>
 		</method>
 		<method name="get_shape" qualifiers="const">
 			<return type="Object">
 			</return>
 			<description>
+			Return this shape's [Shape2D].
 			</description>
 		</method>
 		<method name="set_trigger">
 			<argument index="0" name="enable" type="bool">
 			</argument>
 			<description>
+			Set whether this shape is a trigger. A trigger shape detects collisions, but is otherwise unaffected by physics (i.e. will not block movement of colliding objects).
 			</description>
 		</method>
 		<method name="is_trigger" qualifiers="const">
 			<return type="bool">
 			</return>
 			<description>
+			Return whether this shape is a trigger.
 			</description>
 		</method>
 		<method name="get_collision_object_shape_index" qualifiers="const">
 			<return type="int">
 			</return>
 			<description>
+			Return the index of this shape inside its container [CollisionObject2D]. This can be used to directly access the underlying [Shape2D].
 			</description>
 		</method>
 	</methods>
@@ -7291,7 +7336,7 @@
 	Color in RGBA format.
 	</brief_description>
 	<description>
-	A color is represented as red, green and blue (r,g,b) components. Additionally, "a" represents the alpha component, often used for transparency. Values are in floating point, ranging from 0 to 1.
+	A color is represented as red, green and blue (r,g,b) components. Additionally, "a" represents the alpha component, often used for transparency. Values are in floating point and usually range from 0 to 1.  Some methods (such as set_modulate() ) may accept values &gt; 1.
 	</description>
 	<methods>
 		<method name="blend">
@@ -7659,7 +7704,7 @@
 	Concave polygon shape.
 	</brief_description>
 	<description>
-	Concave polygon shape resource, which can be set into a [PhysicsBody] or area.  This shape is created by feeding a list of triangles.
+	Concave polygon shape resource, which can be set into a [PhysicsBody] or area. This shape is created by feeding a list of triangles.
 	</description>
 	<methods>
 		<method name="set_faces">
@@ -7686,6 +7731,7 @@
 	</brief_description>
 	<description>
 	Concave polygon 2D shape resource for physics. It is made out of segments and is very optimal for complex polygonal concave collisions. It is really not advised to use for RigidBody nodes. A CollisionPolygon2D in convex decomposition mode (solids) or several convex objects are advised for that instead. Otherwise, a concave polygon 2D shape is better for static collisions.
+	The main difference between a [ConvexPolygonShape2D] and a [ConcavePolygonShape2D] is that a concave polygon assumes it is concave and uses a more complex method of collision detection, and a convex one forces itself to be convex in order to speed up collision detection.
 	</description>
 	<methods>
 		<method name="set_segments">
@@ -8576,14 +8622,15 @@
 	Convex Polygon Shape for 2D physics.
 	</brief_description>
 	<description>
-	Convex Polygon Shape for 2D physics.
+	Convex Polygon Shape for 2D physics. A convex polygon, whatever its shape, is internally decomposed into as many convex polygons as needed to ensure all collision checks against it are always done on convex polygons (which are faster to check).
+	The main difference between a [ConvexPolygonShape2D] and a [ConcavePolygonShape2D] is that a concave polygon assumes it is concave and uses a more complex method of collision detection, and a convex one forces itself to be convex in order to speed up collision detection.
 	</description>
 	<methods>
 		<method name="set_point_cloud">
 			<argument index="0" name="point_cloud" type="Vector2Array">
 			</argument>
 			<description>
-			Create the point set from a point cloud. The resulting convex hull will be set as the shape.
+			Currently, this method does nothing.
 			</description>
 		</method>
 		<method name="set_points">
@@ -8712,14 +8759,18 @@
 </class>
 <class name="Curve2D" inherits="Resource" category="Core">
 	<brief_description>
+	Describes a Bezier curve in 2D space.
 	</brief_description>
 	<description>
+	This class describes a Bezier curve in 2D space. It is mainly used to give a shape to a [Path2D], but can be manually sampled for other purposes.
+It keeps a cache of precalculated points along the curve, to speed further calculations up.
 	</description>
 	<methods>
 		<method name="get_point_count" qualifiers="const">
 			<return type="int">
 			</return>
 			<description>
+			Returns the number of points describing the curve.
 			</description>
 		</method>
 		<method name="add_point">
@@ -8732,6 +8783,8 @@
 			<argument index="3" name="atpos" type="int" default="-1">
 			</argument>
 			<description>
+			Adds a point to a curve, at position "pos", with control points "in" and "out".
+If "atpos" is given, the point is inserted before the point number "atpos", moving that point (and every point after) after the inserted point. If "atpos" is not given, or is an illegal value (atpos &lt;0 or atpos &gt;= [method get_point_count]), the point will be appended at the end of the point list.
 			</description>
 		</method>
 		<method name="set_point_pos">
@@ -8740,6 +8793,7 @@
 			<argument index="1" name="pos" type="Vector2">
 			</argument>
 			<description>
+			Sets the position for the vertex "idx". If the index is out of bounds, the function sends an error to the console.
 			</description>
 		</method>
 		<method name="get_point_pos" qualifiers="const">
@@ -8748,6 +8802,7 @@
 			<argument index="0" name="idx" type="int">
 			</argument>
 			<description>
+			Returns the position of the vertex "idx". If the index is out of bounds, the function sends an error to the console, and returns (0, 0).
 			</description>
 		</method>
 		<method name="set_point_in">
@@ -8756,6 +8811,7 @@
 			<argument index="1" name="pos" type="Vector2">
 			</argument>
 			<description>
+			Sets the position of the control point leading to the vertex "idx". If the index is out of bounds, the function sends an error to the console.
 			</description>
 		</method>
 		<method name="get_point_in" qualifiers="const">
@@ -8764,6 +8820,7 @@
 			<argument index="0" name="idx" type="int">
 			</argument>
 			<description>
+			Returns the position of the control point leading to the vertex "idx". If the index is out of bounds, the function sends an error to the console, and returns (0, 0).
 			</description>
 		</method>
 		<method name="set_point_out">
@@ -8772,6 +8829,7 @@
 			<argument index="1" name="pos" type="Vector2">
 			</argument>
 			<description>
+			Sets the position of the control point leading out of the vertex "idx". If the index is out of bounds, the function sends an error to the console.
 			</description>
 		</method>
 		<method name="get_point_out" qualifiers="const">
@@ -8780,12 +8838,14 @@
 			<argument index="0" name="idx" type="int">
 			</argument>
 			<description>
+			Returns the position of the control point leading out of the vertex "idx". If the index is out of bounds, the function sends an error to the console, and returns (0, 0).
 			</description>
 		</method>
 		<method name="remove_point">
 			<argument index="0" name="idx" type="int">
 			</argument>
 			<description>
+			Deletes the point "idx" from the curve. Sends an error to the console if "idx" is out of bounds.
 			</description>
 		</method>
 		<method name="interpolate" qualifiers="const">
@@ -8796,6 +8856,8 @@
 			<argument index="1" name="t" type="float">
 			</argument>
 			<description>
+			Returns the position between the vertex "idx" and the vertex "idx"+1, where "t" controls if the point is the first vertex (t = 0.0), the last vertex (t = 1.0), or in between. Values of "t" outside the range (0.0 &gt;= t  &lt;=1) give strange, but predictable results.
+If "idx" is out of bounds it is truncated to the first or last vertex, and "t" is ignored. If the curve has no points, the function sends an error to the console, and returns (0, 0).
 			</description>
 		</method>
 		<method name="interpolatef" qualifiers="const">
@@ -8804,24 +8866,28 @@
 			<argument index="0" name="fofs" type="float">
 			</argument>
 			<description>
+			Returns the position at the vertex "fofs". It calls [method interpolate] using the integer part of fofs as "idx", and its fractional part as "t".
 			</description>
 		</method>
 		<method name="set_bake_interval">
 			<argument index="0" name="distance" type="float">
 			</argument>
 			<description>
+			Sets the distance in pixels between two adjacent cached points. Changing it forces the cache to be recomputed the next time a xxx_baked_xxx function is called. The less distance, the more points the cache will have, and the more memory it will consume, so use with care.
 			</description>
 		</method>
 		<method name="get_bake_interval" qualifiers="const">
 			<return type="float">
 			</return>
 			<description>
+			Returns the distance between two adjacent cached points.
 			</description>
 		</method>
 		<method name="get_baked_length" qualifiers="const">
 			<return type="float">
 			</return>
 			<description>
+			Returns the total length of the curve, based on the cached points. Given enough density (see [method set_bake_interval]), it should be approximate enough.
 			</description>
 		</method>
 		<method name="interpolate_baked" qualifiers="const">
@@ -8832,12 +8898,16 @@
 			<argument index="1" name="cubic" type="bool" default="false">
 			</argument>
 			<description>
+			Returns a point within the curve at position "offset", where "offset" is measured as a pixel distance along the curve.
+To do that, it finds the two cached points where the "offset" lies between, then interpolates the values. This interpolation is cubic if "cubic" is set to true, or linear if set to false.
+Cubic interpolation tends to follow the curves better, but linear is faster (and often, precise enough).
 			</description>
 		</method>
 		<method name="get_baked_points" qualifiers="const">
 			<return type="Vector2Array">
 			</return>
 			<description>
+			Returns the cache of points as a [Vector2Array].
 			</description>
 		</method>
 		<method name="tesselate" qualifiers="const">
@@ -8848,6 +8918,10 @@
 			<argument index="1" name="tolerance_degrees" type="float" default="4">
 			</argument>
 			<description>
+			Returns a list of points along the curve, with a curvature controlled point density. That is, the curvier parts will have more points than the straighter parts.
+This approximation makes straight segments between each point, then subdivides those segments until the resulting shape is similar enough.
+"max_stages" controls how many subdivisions a curve segment may face before it is considered approximate enough. Each subdivision splits the segment in half, so the default 5 stages may mean up to 32 subdivisions per curve segment. Increase with care!
+"tolerance_degrees" controls how many degrees the midpoint of a segment may deviate from the real curve, before the segment has to be subdivided.
 			</description>
 		</method>
 	</methods>
@@ -8856,14 +8930,18 @@
 </class>
 <class name="Curve3D" inherits="Resource" category="Core">
 	<brief_description>
+	Describes a Bezier curve in 3D space.
 	</brief_description>
 	<description>
+	This class describes a Bezier curve in 3D space. It is mainly used to give a shape to a [Path], but can be manually sampled for other purposes.
+It keeps a cache of precalculated points along the curve, to speed further calculations up.
 	</description>
 	<methods>
 		<method name="get_point_count" qualifiers="const">
 			<return type="int">
 			</return>
 			<description>
+			Returns the number of points describing the curve.
 			</description>
 		</method>
 		<method name="add_point">
@@ -8876,6 +8954,8 @@
 			<argument index="3" name="atpos" type="int" default="-1">
 			</argument>
 			<description>
+			Adds a point to a curve, at position "pos", with control points "in" and "out".
+If "atpos" is given, the point is inserted before the point number "atpos", moving that point (and every point after) after the inserted point. If "atpos" is not given, or is an illegal value (atpos &lt;0 or atpos &gt;= [method get_point_count]), the point will be appended at the end of the point list.
 			</description>
 		</method>
 		<method name="set_point_pos">
@@ -8884,6 +8964,7 @@
 			<argument index="1" name="pos" type="Vector3">
 			</argument>
 			<description>
+			Sets the position for the vertex "idx". If the index is out of bounds, the function sends an error to the console.
 			</description>
 		</method>
 		<method name="get_point_pos" qualifiers="const">
@@ -8892,6 +8973,7 @@
 			<argument index="0" name="idx" type="int">
 			</argument>
 			<description>
+			Returns the position of the vertex "idx". If the index is out of bounds, the function sends an error to the console, and returns (0, 0, 0).
 			</description>
 		</method>
 		<method name="set_point_tilt">
@@ -8900,6 +8982,8 @@
 			<argument index="1" name="tilt" type="float">
 			</argument>
 			<description>
+			Sets the tilt angle in radians for the point "idx". If the index is out of bounds, the function sends an error to the console.
+The tilt controls the rotation along the look-at axis an object travelling the path would have. In the case of a curve controlling a [PathFollow], this tilt is an offset over the natural tilt the PathFollow calculates.
 			</description>
 		</method>
 		<method name="get_point_tilt" qualifiers="const">
@@ -8908,6 +8992,7 @@
 			<argument index="0" name="idx" type="int">
 			</argument>
 			<description>
+			Returns the tilt angle in radians for the point "idx". If the index is out of bounds, the function sends an error to the console, and returns 0.
 			</description>
 		</method>
 		<method name="set_point_in">
@@ -8916,6 +9001,7 @@
 			<argument index="1" name="pos" type="Vector3">
 			</argument>
 			<description>
+			Sets the position of the control point leading to the vertex "idx". If the index is out of bounds, the function sends an error to the console.
 			</description>
 		</method>
 		<method name="get_point_in" qualifiers="const">
@@ -8924,6 +9010,7 @@
 			<argument index="0" name="idx" type="int">
 			</argument>
 			<description>
+			Returns the position of the control point leading to the vertex "idx". If the index is out of bounds, the function sends an error to the console, and returns (0, 0, 0).
 			</description>
 		</method>
 		<method name="set_point_out">
@@ -8932,6 +9019,7 @@
 			<argument index="1" name="pos" type="Vector3">
 			</argument>
 			<description>
+			Sets the position of the control point leading out of the vertex "idx". If the index is out of bounds, the function sends an error to the console.
 			</description>
 		</method>
 		<method name="get_point_out" qualifiers="const">
@@ -8940,12 +9028,14 @@
 			<argument index="0" name="idx" type="int">
 			</argument>
 			<description>
+			Returns the position of the control point leading out of the vertex "idx". If the index is out of bounds, the function sends an error to the console, and returns (0, 0, 0).
 			</description>
 		</method>
 		<method name="remove_point">
 			<argument index="0" name="idx" type="int">
 			</argument>
 			<description>
+			Deletes the point "idx" from the curve. Sends an error to the console if "idx" is out of bounds.
 			</description>
 		</method>
 		<method name="interpolate" qualifiers="const">
@@ -8956,6 +9046,8 @@
 			<argument index="1" name="t" type="float">
 			</argument>
 			<description>
+			Returns the position between the vertex "idx" and the vertex "idx"+1, where "t" controls if the point is the first vertex (t = 0.0), the last vertex (t = 1.0), or in between. Values of "t" outside the range (0.0 &gt;= t  &lt;=1) give strange, but predictable results.
+If "idx" is out of bounds it is truncated to the first or last vertex, and "t" is ignored. If the curve has no points, the function sends an error to the console, and returns (0, 0, 0).
 			</description>
 		</method>
 		<method name="interpolatef" qualifiers="const">
@@ -8964,24 +9056,28 @@
 			<argument index="0" name="fofs" type="float">
 			</argument>
 			<description>
+			Returns the position at the vertex "fofs". It calls [method interpolate] using the integer part of fofs as "idx", and its fractional part as "t".
 			</description>
 		</method>
 		<method name="set_bake_interval">
 			<argument index="0" name="distance" type="float">
 			</argument>
 			<description>
+			Sets the distance in 3D units between two adjacent cached points. Changing it forces the cache to be recomputed the next time a xxx_baked_xxx function is called. The less distance, the more points the cache will have, and the more memory it will consume, so use with care.
 			</description>
 		</method>
 		<method name="get_bake_interval" qualifiers="const">
 			<return type="float">
 			</return>
 			<description>
+			Returns the distance between two adjacent cached points.
 			</description>
 		</method>
 		<method name="get_baked_length" qualifiers="const">
 			<return type="float">
 			</return>
 			<description>
+			Returns the total length of the curve, based on the cached points. Given enough density (see [method set_bake_interval]), it should be approximate enough.
 			</description>
 		</method>
 		<method name="interpolate_baked" qualifiers="const">
@@ -8992,18 +9088,23 @@
 			<argument index="1" name="cubic" type="bool" default="false">
 			</argument>
 			<description>
+			Returns a point within the curve at position "offset", where "offset" is measured as a distance in 3D units along the curve.
+To do that, it finds the two cached points where the "offset" lies between, then interpolates the values. This interpolation is cubic if "cubic" is set to true, or linear if set to false.
+Cubic interpolation tends to follow the curves better, but linear is faster (and often, precise enough).
 			</description>
 		</method>
 		<method name="get_baked_points" qualifiers="const">
 			<return type="Vector3Array">
 			</return>
 			<description>
+			Returns the cache of points as a [Vector3Array].
 			</description>
 		</method>
 		<method name="get_baked_tilts" qualifiers="const">
 			<return type="RealArray">
 			</return>
 			<description>
+			Returns the cache of tilts as a [RealArray].
 			</description>
 		</method>
 		<method name="tesselate" qualifiers="const">
@@ -9014,6 +9115,10 @@
 			<argument index="1" name="tolerance_degrees" type="float" default="4">
 			</argument>
 			<description>
+			Returns a list of points along the curve, with a curvature controlled point density. That is, the curvier parts will have more points than the straighter parts.
+This approximation makes straight segments between each point, then subdivides those segments until the resulting shape is similar enough.
+"max_stages" controls how many subdivisions a curve segment may face before it is considered approximate enough. Each subdivision splits the segment in half, so the default 5 stages may mean up to 32 subdivisions per curve segment. Increase with care!
+"tolerance_degrees" controls how many degrees the midpoint of a segment may deviate from the real curve, before the segment has to be subdivided.
 			</description>
 		</method>
 	</methods>
@@ -10676,6 +10781,14 @@
 		</constant>
 		<constant name="FLAG_DISCARD_ALPHA" value="3">
 		</constant>
+		<constant name="LIGHT_SHADER_LAMBERT" value="0">
+		</constant>
+		<constant name="LIGHT_SHADER_WRAP" value="1">
+		</constant>
+		<constant name="LIGHT_SHADER_VELVET" value="2">
+		</constant>
+		<constant name="LIGHT_SHADER_TOON" value="3">
+		</constant>
 	</constants>
 </class>
 <class name="Font" inherits="Resource" category="Core">
@@ -10867,27 +10980,25 @@
 	</description>
 	<methods>
 		<method name="call_func">
-			<argument index="0" name="method" type="String">
+			<argument index="0" name="arg0" type="var" default="NULL">
 			</argument>
-			<argument index="1" name="arg0" type="var" default="NULL">
+			<argument index="1" name="arg1" type="var" default="NULL">
 			</argument>
-			<argument index="2" name="arg1" type="var" default="NULL">
+			<argument index="2" name="arg2" type="var" default="NULL">
 			</argument>
-			<argument index="3" name="arg2" type="var" default="NULL">
+			<argument index="3" name="arg3" type="var" default="NULL">
 			</argument>
-			<argument index="4" name="arg3" type="var" default="NULL">
+			<argument index="4" name="arg4" type="var" default="NULL">
 			</argument>
-			<argument index="5" name="arg4" type="var" default="NULL">
+			<argument index="5" name="arg5" type="var" default="NULL">
 			</argument>
-			<argument index="6" name="arg5" type="var" default="NULL">
+			<argument index="6" name="arg6" type="var" default="NULL">
 			</argument>
-			<argument index="7" name="arg6" type="var" default="NULL">
+			<argument index="7" name="arg7" type="var" default="NULL">
 			</argument>
-			<argument index="8" name="arg7" type="var" default="NULL">
+			<argument index="8" name="arg8" type="var" default="NULL">
 			</argument>
-			<argument index="9" name="arg8" type="var" default="NULL">
-			</argument>
-			<argument index="10" name="arg9" type="var" default="NULL">
+			<argument index="9" name="arg9" type="var" default="NULL">
 			</argument>
 			<description>
 			</description>
@@ -11556,8 +11667,11 @@
 </class>
 <class name="GraphEdit" inherits="Control" category="Core">
 	<brief_description>
+	GraphEdit is an area capable of showing various GraphNodes. It manages connection events between them.
 	</brief_description>
 	<description>
+	GraphEdit manages the showing of GraphNodes it contains, as well as connections an disconnections between them. Signals are sent for each of these two events. Disconnection between GraphNodes slots is disabled by default.
+		It is greatly advised to enable low processor usage mode [OS.set_low_processor_usage_mode()] when using GraphEdits.
 	</description>
 	<methods>
 		<method name="connect_node">
@@ -11572,6 +11686,7 @@
 			<argument index="3" name="to_port" type="int">
 			</argument>
 			<description>
+			Create a connection between 'from_port' slot of 'from' GraphNode and 'to_port' slot of 'to' GraphNode. If the connection already exists, no connection is created.
 			</description>
 		</method>
 		<method name="is_node_connected">
@@ -11586,6 +11701,7 @@
 			<argument index="3" name="to_port" type="int">
 			</argument>
 			<description>
+			Return true if the 'from_port' slot of 'from' GraphNode is connected to the 'to_port' slot of 'to' GraphNode.
 			</description>
 		</method>
 		<method name="disconnect_node">
@@ -11598,28 +11714,50 @@
 			<argument index="3" name="to_port" type="int">
 			</argument>
 			<description>
+			Remove the connection between 'from_port' slot of 'from' GraphNode and 'to_port' slot of 'to' GraphNode, if connection exists.
 			</description>
 		</method>
 		<method name="get_connection_list" qualifiers="const">
 			<return type="Array">
 			</return>
 			<description>
+			Return an Array containing the list of connections. A connection consists in a structure of the form {from_slot: 0, from: "GraphNode name 0", to_slot: 1, to: "GraphNode name 1" }
 			</description>
 		</method>
 		<method name="set_right_disconnects">
 			<argument index="0" name="enable" type="bool">
 			</argument>
 			<description>
+			Enable the disconnection of existing connections in the visual GraphEdit by left-clicking a connection and releasing into the void.
 			</description>
 		</method>
 		<method name="is_right_disconnects_enabled" qualifiers="const">
 			<return type="bool">
 			</return>
 			<description>
+			Return true is the disconnection of connections is enable in the visual GraphEdit. False otherwise.
 			</description>
 		</method>
 	</methods>
 	<signals>
+		<signal name="delete_nodes_request">
+			<description>
+			</description>
+		</signal>
+		<signal name="duplicate_nodes_request">
+			<description>
+			</description>
+		</signal>
+		<signal name="popup_request">
+			<argument index="0" name="p_position" type="Vector2">
+			</argument>
+			<description>
+			</description>
+		</signal>
+		<signal name="_begin_node_move">
+			<description>
+			</description>
+		</signal>
 		<signal name="disconnection_request">
 			<argument index="0" name="from" type="String">
 			</argument>
@@ -11630,6 +11768,7 @@
 			<argument index="3" name="to_slot" type="int">
 			</argument>
 			<description>
+			Signal sent to the GraphEdit when the connection between 'from_slot' slot of 'from' GraphNode and 'to_slot' slot of 'to' GraphNode is attempted to be removed.
 			</description>
 		</signal>
 		<signal name="connection_request">
@@ -11642,6 +11781,11 @@
 			<argument index="3" name="to_slot" type="int">
 			</argument>
 			<description>
+			Signal sent to the GraphEdit when the connection between 'from_slot' slot of 'from' GraphNode and 'to_slot' slot of 'to' GraphNode is attempted to be created.
+			</description>
+		</signal>
+		<signal name="_end_node_move">
+			<description>
 			</description>
 		</signal>
 	</signals>
@@ -11650,20 +11794,24 @@
 </class>
 <class name="GraphNode" inherits="Container" category="Core">
 	<brief_description>
+	A GraphNode is a container with several input and output slots allowing connections between GraphNodes. Slots can have different, incompatible types.
 	</brief_description>
 	<description>
+	A GraphNode is a container defined by a title. It can have 1 or more input and output slots, which can be enabled (shown) or disabled (not shown) and have different (incompatible) types. Colors can also be assigned to slots. A tuple of input and output slots is defined for each GUI element included in the GraphNode. Input and output connections are left and right slots, but only enabled slots are counted as connections.
 	</description>
 	<methods>
 		<method name="set_title">
 			<argument index="0" name="title" type="String">
 			</argument>
 			<description>
+			Set the title of the GraphNode.
 			</description>
 		</method>
 		<method name="get_title" qualifiers="const">
 			<return type="String">
 			</return>
 			<description>
+			Return the title of the GraphNode.
 			</description>
 		</method>
 		<method name="set_slot">
@@ -11682,16 +11830,19 @@
 			<argument index="6" name="color_right" type="Color">
 			</argument>
 			<description>
+			Set the tuple of input/output slots defined by 'idx' ID. 'left' slots are input, 'right' are output. 'type' is an integer defining the type of the slot. Refer to description for the compatibility between slot types.
 			</description>
 		</method>
 		<method name="clear_slot">
 			<argument index="0" name="idx" type="int">
 			</argument>
 			<description>
+			Disable input and ouput slot whose index is 'idx'.
 			</description>
 		</method>
 		<method name="clear_all_slots">
 			<description>
+			Disable all input and output slots of the GraphNode.
 			</description>
 		</method>
 		<method name="is_slot_enabled_left" qualifiers="const">
@@ -11700,6 +11851,7 @@
 			<argument index="0" name="idx" type="int">
 			</argument>
 			<description>
+			Return true if left (input) slot 'idx' is enabled. False otherwise.
 			</description>
 		</method>
 		<method name="get_slot_type_left" qualifiers="const">
@@ -11708,6 +11860,7 @@
 			<argument index="0" name="idx" type="int">
 			</argument>
 			<description>
+			Return the (integer) type of left (input) 'idx' slot.
 			</description>
 		</method>
 		<method name="get_slot_color_left" qualifiers="const">
@@ -11716,6 +11869,7 @@
 			<argument index="0" name="idx" type="int">
 			</argument>
 			<description>
+			Return the color set to 'idx' left (input) slot.
 			</description>
 		</method>
 		<method name="is_slot_enabled_right" qualifiers="const">
@@ -11724,6 +11878,7 @@
 			<argument index="0" name="idx" type="int">
 			</argument>
 			<description>
+			Return true if right (output) slot 'idx' is enabled. False otherwise.
 			</description>
 		</method>
 		<method name="get_slot_type_right" qualifiers="const">
@@ -11732,6 +11887,7 @@
 			<argument index="0" name="idx" type="int">
 			</argument>
 			<description>
+			Return the (integer) type of right (output) 'idx' slot.
 			</description>
 		</method>
 		<method name="get_slot_color_right" qualifiers="const">
@@ -11740,30 +11896,35 @@
 			<argument index="0" name="idx" type="int">
 			</argument>
 			<description>
+			Return the color set to 'idx' right (output) slot.
 			</description>
 		</method>
 		<method name="set_offset">
 			<argument index="0" name="offset" type="Vector2">
 			</argument>
 			<description>
+			Set the offset of the GraphNode.
 			</description>
 		</method>
 		<method name="get_offset" qualifiers="const">
 			<return type="Vector2">
 			</return>
 			<description>
+			Return the offset of the GraphNode.
 			</description>
 		</method>
 		<method name="get_connection_output_count">
 			<return type="int">
 			</return>
 			<description>
+			Return the number of enabled output slots (connections) of the GraphNode.
 			</description>
 		</method>
 		<method name="get_connection_input_count">
 			<return type="int">
 			</return>
 			<description>
+			Return the number of enabled input slots (connections) to the GraphNode.
 			</description>
 		</method>
 		<method name="get_connection_output_pos">
@@ -11772,6 +11933,7 @@
 			<argument index="0" name="idx" type="int">
 			</argument>
 			<description>
+			Return the position of the output connection 'idx'.
 			</description>
 		</method>
 		<method name="get_connection_output_type">
@@ -11780,6 +11942,7 @@
 			<argument index="0" name="idx" type="int">
 			</argument>
 			<description>
+			Return the type of the output connection 'idx'.
 			</description>
 		</method>
 		<method name="get_connection_output_color">
@@ -11788,6 +11951,7 @@
 			<argument index="0" name="idx" type="int">
 			</argument>
 			<description>
+			Return the color of the output connection 'idx'.
 			</description>
 		</method>
 		<method name="get_connection_input_pos">
@@ -11796,6 +11960,7 @@
 			<argument index="0" name="idx" type="int">
 			</argument>
 			<description>
+			Return the position of the input connection 'idx'.
 			</description>
 		</method>
 		<method name="get_connection_input_type">
@@ -11804,6 +11969,7 @@
 			<argument index="0" name="idx" type="int">
 			</argument>
 			<description>
+			Return the type of the input connection 'idx'.
 			</description>
 		</method>
 		<method name="get_connection_input_color">
@@ -11812,28 +11978,33 @@
 			<argument index="0" name="idx" type="int">
 			</argument>
 			<description>
+			Return the color of the input connection 'idx'.
 			</description>
 		</method>
 		<method name="set_show_close_button">
 			<argument index="0" name="show" type="bool">
 			</argument>
 			<description>
+			Show the close button on the GraphNode if 'show' is true (disabled by default). If enabled, a connection on the signal close_request is needed for the close button to work.
 			</description>
 		</method>
 		<method name="is_close_button_visible" qualifiers="const">
 			<return type="bool">
 			</return>
 			<description>
+			Returns true if the close button is shown. False otherwise.
 			</description>
 		</method>
 	</methods>
 	<signals>
 		<signal name="raise_request">
 			<description>
+			Signal sent when the GraphNode is requested to be displayed over other ones. Happens on focusing (clicking into) the GraphNode.
 			</description>
 		</signal>
 		<signal name="close_request">
 			<description>
+			Signal sent on closing the GraphNode.
 			</description>
 		</signal>
 		<signal name="dragged">
@@ -11842,10 +12013,12 @@
 			<argument index="1" name="to" type="Vector2">
 			</argument>
 			<description>
+			Signal sent when the GraphNode is dragged.
 			</description>
 		</signal>
 		<signal name="offset_changed">
 			<description>
+			Signal sent when the GraphNode is moved.
 			</description>
 		</signal>
 	</signals>
@@ -11869,6 +12042,12 @@
 		<theme_item name="title_font" type="Font">
 		</theme_item>
 		<theme_item name="frame" type="StyleBox">
+		</theme_item>
+		<theme_item name="selectedframe" type="StyleBox">
+		</theme_item>
+		<theme_item name="defaultfocus" type="StyleBox">
+		</theme_item>
+		<theme_item name="defaultframe" type="StyleBox">
 		</theme_item>
 	</theme_items>
 </class>
@@ -12367,9 +12546,13 @@
 			</argument>
 			<argument index="2" name="use_ssl" type="bool" default="false">
 			</argument>
-			<argument index="3" name="arg3" type="bool" default="true">
+			<argument index="3" name="verify_host" type="bool" default="true">
 			</argument>
 			<description>
+			Connect to a host. This needs to be done before any requests are sent.
+The host should not have http:// prepended but will strip the protocol identifier if provided.
+
+verify_host will check the SSL identity of the host if set to true.
 			</description>
 		</method>
 		<method name="set_connection">
@@ -12390,6 +12573,19 @@
 			<argument index="3" name="body" type="String" default="&quot;&quot;">
 			</argument>
 			<description>
+			Sends a request to the connected host. The url is the what is normally behind the hostname, i.e:
+http://somehost.com/index.php
+url would be "index.php"
+
+Headers are HTTP request headers
+
+To create a POST request with query strings to push to the server, do:
+var fields = {"username" : "user",
+                       "password" : "pass"}
+var queryString = httpClient.query_string_from_dict(fields)
+var headers = ["Content-Type: application/x-www-form-urlencoded",
+		   	             "Content-Length: " + str(queryString.length())]
+var result = httpClient.request(httpClient.METHOD_POST, "index.php", headers, queryString)
 			</description>
 		</method>
 		<method name="send_body_text">
@@ -12398,6 +12594,7 @@
 			<argument index="0" name="body" type="String">
 			</argument>
 			<description>
+			Stub function
 			</description>
 		</method>
 		<method name="send_body_data">
@@ -12406,6 +12603,7 @@
 			<argument index="0" name="body" type="RawArray">
 			</argument>
 			<description>
+			Stub function
 			</description>
 		</method>
 		<method name="close">
@@ -12458,12 +12656,14 @@
 			<argument index="0" name="bytes" type="int">
 			</argument>
 			<description>
+			Sets the size of the buffer used and maximum bytes to read per iteration
 			</description>
 		</method>
 		<method name="set_blocking_mode">
 			<argument index="0" name="enabled" type="bool">
 			</argument>
 			<description>
+			If set to true, execute will wait until all data is read from the response.
 			</description>
 		</method>
 		<method name="is_blocking_mode_enabled" qualifiers="const">
@@ -12476,12 +12676,28 @@
 			<return type="int">
 			</return>
 			<description>
+			Returns a status string like STATUS_REQUESTING. Need to call [method poll] in order to get status updates.
 			</description>
 		</method>
 		<method name="poll">
 			<return type="Error">
 			</return>
 			<description>
+			This needs to be called in order to have any request processed. Check results with [method get_status]
+			</description>
+		</method>
+		<method name="query_string_from_dict">
+			<return type="String">
+			</return>
+			<argument index="0" name="fields" type="Dictionary">
+			</argument>
+			<description>
+			Generates a GET/POST application/x-www-form-urlencoded style query string from a provided dictionary.
+
+var fields = {"username": "user", "password": "pass"}
+String queryString = httpClient.query_string_from_dict(fields)
+
+returns:= "username=user&amp;password=pass"
 			</description>
 		</method>
 	</methods>
@@ -14252,6 +14468,28 @@
 	<constants>
 	</constants>
 </class>
+<class name="InstancePlaceholder" inherits="Node" category="Core">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<methods>
+		<method name="replace_by_instance">
+			<argument index="0" name="custom_scene" type="PackedScene" default="NULL">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="get_instance_path" qualifiers="const">
+			<return type="String">
+			</return>
+			<description>
+			</description>
+		</method>
+	</methods>
+	<constants>
+	</constants>
+</class>
 <class name="IntArray" category="Built-In Types">
 	<brief_description>
 	Integer Array.
@@ -15697,6 +15935,18 @@
 	LineEdit provides a single line string editor, used for text fields.
 	</description>
 	<methods>
+		<method name="set_align">
+			<argument index="0" name="align" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="get_align" qualifiers="const">
+			<return type="int">
+			</return>
+			<description>
+			</description>
+		</method>
 		<method name="clear">
 			<description>
 			Clear the [LineEdit] text.
@@ -15810,6 +16060,14 @@
 		</signal>
 	</signals>
 	<constants>
+		<constant name="ALIGN_LEFT" value="0">
+		</constant>
+		<constant name="ALIGN_CENTER" value="1">
+		</constant>
+		<constant name="ALIGN_RIGHT" value="2">
+		</constant>
+		<constant name="ALIGN_FILL" value="3">
+		</constant>
 	</constants>
 	<theme_items>
 		<theme_item name="minimum_spaces" type="int">
@@ -16477,11 +16735,11 @@
 		</method>
 	</methods>
 	<members>
-		<member name="x" type="float">
+		<member name="x" type="Vector2">
 		</member>
-		<member name="y" type="float">
+		<member name="y" type="Vector2">
 		</member>
-		<member name="o" type="float">
+		<member name="o" type="Vector2">
 		</member>
 	</members>
 	<constants>
@@ -16527,6 +16785,8 @@
 		<theme_item name="hover" type="StyleBox">
 		</theme_item>
 		<theme_item name="pressed" type="StyleBox">
+		</theme_item>
+		<theme_item name="focus" type="StyleBox">
 		</theme_item>
 		<theme_item name="disabled" type="StyleBox">
 		</theme_item>
@@ -17934,7 +18194,7 @@
 	</brief_description>
 	<description>
 	Nodes can be set as children of other nodes, resulting in a tree arrangement. Any tree of nodes is called a "Scene".
-	Scenes can be saved to disk, and then instanced into other scenes. This allows for very high flexibility in the architecture and data model of the projects. 
+	Scenes can be saved to disk, and then instanced into other scenes. This allows for very high flexibility in the architecture and data model of the projects.
 	[SceneMainLoop] contains the "active" tree of nodes, and a node becomes active (receinving NOTIFICATION_ENTER_SCENE) when added to that tree.
 	A node can contain any number of nodes as a children (but there is only one tree root) with the requirement that no two childrens with the same name can exist.
 	Nodes can, optionally, be added to groups. This makes it easy to reach a number of nodes from the code (for example an "enemies" group).
@@ -18084,7 +18344,11 @@
 		<method name="find_node" qualifiers="const">
 			<return type="Node">
 			</return>
-			<argument index="0" name="mask" type="NodePath" default="true">
+			<argument index="0" name="mask" type="String">
+			</argument>
+			<argument index="1" name="recursive" type="bool" default="true">
+			</argument>
+			<argument index="2" name="owned" type="bool" default="true">
 			</argument>
 			<description>
 			</description>
@@ -18373,6 +18637,18 @@
 			</argument>
 			<description>
 			Replace a node in a scene by a given one. Subscriptions that pass through this node will be lost.
+			</description>
+		</method>
+		<method name="set_scene_instance_load_placeholder">
+			<argument index="0" name="load_placeholder" type="bool">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="get_scene_instance_load_placeholder" qualifiers="const">
+			<return type="bool">
+			</return>
+			<description>
 			</description>
 		</method>
 		<method name="get_viewport" qualifiers="const">
@@ -18684,11 +18960,11 @@
 	<description>
 	Operating System functions. OS Wraps the most common functionality to communicate with the host Operating System, such as:
  -Mouse Grabbing
- -Mouse Cursors 
+ -Mouse Cursors
  -Clipboard
  -Video Mode
  -Date " Time
- -Timers 
+ -Timers
  -Environment Variables
  -Execution of Binaries
  -Command Line
@@ -20131,7 +20407,7 @@
 		<method name="instance" qualifiers="const">
 			<return type="Node">
 			</return>
-			<argument index="0" name="arg0" type="bool" default="false">
+			<argument index="0" name="gen_edit_state" type="bool" default="false">
 			</argument>
 			<description>
 			</description>
@@ -20377,6 +20653,18 @@
 		</method>
 		<method name="get_limit_end" qualifiers="const">
 			<return type="Vector2">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="set_ignore_camera_zoom">
+			<argument index="0" name="arg0" type="bool">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="is_ignore_camera_zoom">
+			<return type="bool">
 			</return>
 			<description>
 			</description>
@@ -21189,20 +21477,24 @@
 </class>
 <class name="Path" inherits="Spatial" category="Core">
 	<brief_description>
+	Container for a [Curve3D].
 	</brief_description>
 	<description>
+	This class is a container/Node-ification of a [Curve3D], so it can have [Spatial] properties and [Node] info.
 	</description>
 	<methods>
 		<method name="set_curve">
 			<argument index="0" name="curve" type="Curve3D">
 			</argument>
 			<description>
+			Sets the [Curve3D].
 			</description>
 		</method>
 		<method name="get_curve" qualifiers="const">
 			<return type="Curve3D">
 			</return>
 			<description>
+			Returns the [Curve3D] contained.
 			</description>
 		</method>
 	</methods>
@@ -21211,20 +21503,24 @@
 </class>
 <class name="Path2D" inherits="Node2D" category="Core">
 	<brief_description>
+	Container for a [Curve2D].
 	</brief_description>
 	<description>
+	This class is a container/Node-ification of a [Curve2D], so it can have [Node2D] properties and [Node] info.
 	</description>
 	<methods>
 		<method name="set_curve">
 			<argument index="0" name="curve" type="Curve2D">
 			</argument>
 			<description>
+			Sets the [Curve2D].
 			</description>
 		</method>
 		<method name="get_curve" qualifiers="const">
 			<return type="Curve2D">
 			</return>
 			<description>
+			Returns the [Curve2D] contained.
 			</description>
 		</method>
 	</methods>
@@ -21233,194 +21529,238 @@
 </class>
 <class name="PathFollow" inherits="Spatial" category="Core">
 	<brief_description>
+	Point sampler for a [Path].
 	</brief_description>
 	<description>
+	This node takes its parent [Path], and returns the coordinates of a point within it, given a distance from the first vertex.
+It is useful for making other nodes follow a path, without coding the movement pattern. For that, the nodes must be descendants of this node. Then, when setting an offset in this node, the descendant nodes will move accordingly.
 	</description>
 	<methods>
 		<method name="set_offset">
 			<argument index="0" name="offset" type="float">
 			</argument>
 			<description>
+			Sets the distance from the first vertex, measured in 3D units along the path. This sets this node's position to a point within the path.
 			</description>
 		</method>
 		<method name="get_offset" qualifiers="const">
 			<return type="float">
 			</return>
 			<description>
+			Returns the distance along the path in 3D units.
 			</description>
 		</method>
 		<method name="set_h_offset">
 			<argument index="0" name="h_offset" type="float">
 			</argument>
 			<description>
+			Moves this node in the X axis. As this node's position will be set every time its offset is set, this allows many PathFollow to share the same curve (and thus the same movement pattern), yet not return the same position for a given path offset.
+A similar effect may be achieved moving the this node's descendants.
 			</description>
 		</method>
 		<method name="get_h_offset" qualifiers="const">
 			<return type="float">
 			</return>
 			<description>
+			Returns the X displacement this node has from its parent [Path].
 			</description>
 		</method>
 		<method name="set_v_offset">
 			<argument index="0" name="v_offset" type="float">
 			</argument>
 			<description>
+			Moves this node in the Y axis, for the same reasons of [method set_h_offset].
 			</description>
 		</method>
 		<method name="get_v_offset" qualifiers="const">
 			<return type="float">
 			</return>
 			<description>
+			Returns the Y displacement this node has from its parent [Path].
 			</description>
 		</method>
 		<method name="set_unit_offset">
 			<argument index="0" name="unit_offset" type="float">
 			</argument>
 			<description>
+			Sets the distance from the first vertex, considering 0.0 as the first vertex and 1.0 as the last. This is just another way of expressing the offset within the path, as the offset supplied is multiplied internally by the path's length.
 			</description>
 		</method>
 		<method name="get_unit_offset" qualifiers="const">
 			<return type="float">
 			</return>
 			<description>
+			Returns the distance along the path as a number in the range 0.0 (for the first vertex) to 1.0 (for the last).
 			</description>
 		</method>
 		<method name="set_rotation_mode">
 			<argument index="0" name="rotation_mode" type="int">
 			</argument>
 			<description>
+			Allows or forbids rotation on one or more axes, per the constants below.
 			</description>
 		</method>
 		<method name="get_rotation_mode" qualifiers="const">
 			<return type="int">
 			</return>
 			<description>
+			Returns the rotation mode. The constants below list which axes are allowed to rotate for each mode.
 			</description>
 		</method>
 		<method name="set_cubic_interpolation">
 			<argument index="0" name="enable" type="bool">
 			</argument>
 			<description>
+			The points along the [Curve3D] of the [Path] are precomputed before use, for faster calculations. The point at the requested offset is then calculated interpolating between two adjacent cached points. This may present a problem if the curve makes sharp turns, as the cached points may not follow the curve closely enough.
+There are two answers to this problem: Either increase the number of cached points and increase memory consumption, or make a cubic interpolation between two points at the cost of (slightly) slower calculations.
+This method controls whether the position between two cached points is interpolated linearly, or cubicly.
 			</description>
 		</method>
 		<method name="get_cubic_interpolation" qualifiers="const">
 			<return type="bool">
 			</return>
 			<description>
+			This method returns whether the position between two cached points (see [method set_cubic_interpolation]) is interpolated linearly, or cubicly.
 			</description>
 		</method>
 		<method name="set_loop">
 			<argument index="0" name="loop" type="bool">
 			</argument>
 			<description>
+			If set, any offset outside the path's length (whether set by [method set_offset] or [method set_unit_offset] will wrap around, instead of stopping at the ends. Set it for cyclic paths.
 			</description>
 		</method>
 		<method name="has_loop" qualifiers="const">
 			<return type="bool">
 			</return>
 			<description>
+			Returns whether this node wraps its offsets around, or truncates them to the path ends.
 			</description>
 		</method>
 	</methods>
 	<constants>
 		<constant name="ROTATION_NONE" value="0">
+			Forbids the PathFollow to rotate.
 		</constant>
 		<constant name="ROTATION_Y" value="1">
+			Allows the PathFollow to rotate in the Y axis only.
 		</constant>
 		<constant name="ROTATION_XY" value="2">
+			Allows the PathFollow to rotate in both the X, and Y axes.
 		</constant>
 		<constant name="ROTATION_XYZ" value="3">
+			Allows the PathFollow to rotate in any axis.
 		</constant>
 	</constants>
 </class>
 <class name="PathFollow2D" inherits="Node2D" category="Core">
 	<brief_description>
+	Point sampler for a [Path2D].
 	</brief_description>
 	<description>
+	This node takes its parent [Path2D], and returns the coordinates of a point within it, given a distance from the first vertex.
+It is useful for making other nodes follow a path, without coding the movement pattern. For that, the nodes must be descendants of this node. Then, when setting an offset in this node, the descendant nodes will move accordingly.
 	</description>
 	<methods>
 		<method name="set_offset">
 			<argument index="0" name="offset" type="float">
 			</argument>
 			<description>
+			Sets the distance from the first vertex, measured in pixels along the path. This sets this node's position to a point within the path.
 			</description>
 		</method>
 		<method name="get_offset" qualifiers="const">
 			<return type="float">
 			</return>
 			<description>
+			Returns the distance along the path in pixels.
 			</description>
 		</method>
 		<method name="set_h_offset">
 			<argument index="0" name="h_offset" type="float">
 			</argument>
 			<description>
+			Moves this node horizontally. As this node's position will be set every time its offset is set, this allows many PathFollow2D to share the same curve (and thus the same movement pattern), yet not return the same position for a given path offset.
+A similar effect may be achieved moving this node's descendants.
 			</description>
 		</method>
 		<method name="get_h_offset" qualifiers="const">
 			<return type="float">
 			</return>
 			<description>
+			Returns the horizontal displacement this node has from its parent [Path2D].
 			</description>
 		</method>
 		<method name="set_v_offset">
 			<argument index="0" name="v_offset" type="float">
 			</argument>
 			<description>
+			Moves the PathFollow2D vertically, for the same reasons of [method set_h_offset].
 			</description>
 		</method>
 		<method name="get_v_offset" qualifiers="const">
 			<return type="float">
 			</return>
 			<description>
+			Returns the vertical displacement this node has from its parent [Path2D].
 			</description>
 		</method>
 		<method name="set_unit_offset">
 			<argument index="0" name="unit_offset" type="float">
 			</argument>
 			<description>
+			Sets the distance from the first vertex, considering 0.0 as the first vertex and 1.0 as the last. This is just another way of expressing the offset within the path, as the offset supplied is multiplied internally by the path's length.
 			</description>
 		</method>
 		<method name="get_unit_offset" qualifiers="const">
 			<return type="float">
 			</return>
 			<description>
+			Returns the distance along the path as a number in the range 0.0 (for the first vertex) to 1.0 (for the last).
 			</description>
 		</method>
 		<method name="set_rotate">
 			<argument index="0" name="enable" type="bool">
 			</argument>
 			<description>
+			If set, this node rotates to follow the path, making its descendants rotate.
 			</description>
 		</method>
 		<method name="is_rotating" qualifiers="const">
 			<return type="bool">
 			</return>
 			<description>
+			Returns whether this node rotates to follow the path.
 			</description>
 		</method>
 		<method name="set_cubic_interpolation">
 			<argument index="0" name="enable" type="bool">
 			</argument>
 			<description>
+			The points along the [Curve2D] of the [Path2D] are precomputed before use, for faster calculations. The point at the requested offset is then calculated interpolating between two adjacent cached points. This may present a problem if the curve makes sharp turns, as the cached points may not follow the curve closely enough.
+There are two answers to this problem: Either increase the number of cached points and increase memory consumption, or make a cubic interpolation between two points at the cost of (slightly) slower calculations.
+This method controls whether the position between two cached points is interpolated linearly, or cubicly.
 			</description>
 		</method>
 		<method name="get_cubic_interpolation" qualifiers="const">
 			<return type="bool">
 			</return>
 			<description>
+			This method returns whether the position between two cached points (see [method set_cubic_interpolation]) is interpolated linearly, or cubicly.
 			</description>
 		</method>
 		<method name="set_loop">
 			<argument index="0" name="loop" type="bool">
 			</argument>
 			<description>
+			If set, any offset outside the path's length (whether set by [method set_offset] or [method set_unit_offset] will wrap around, instead of stopping at the ends. Set it for cyclic paths.
 			</description>
 		</method>
 		<method name="has_loop" qualifiers="const">
 			<return type="bool">
 			</return>
 			<description>
+			Returns whether this node wraps its offsets around, or truncates them to the path ends.
 			</description>
 		</method>
 	</methods>
@@ -24648,6 +24988,18 @@
 	Pin Joint for 2D Rigid Bodies. It pins 2 bodies (rigid or static) together, or a single body to a fixed position in space.
 	</description>
 	<methods>
+		<method name="set_softness">
+			<argument index="0" name="softness" type="float">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="get_softness" qualifiers="const">
+			<return type="float">
+			</return>
+			<description>
+			</description>
+		</method>
 	</methods>
 	<constants>
 	</constants>
@@ -25768,6 +26120,14 @@
 			<description>
 			</description>
 		</method>
+		<method name="xform">
+			<return type="Vector3">
+			</return>
+			<argument index="0" name="v" type="Vector3">
+			</argument>
+			<description>
+			</description>
+		</method>
 		<method name="Quat">
 			<return type="Quat">
 			</return>
@@ -26012,12 +26372,14 @@
 			<return type="String">
 			</return>
 			<description>
+			Returns a copy of the array's contents formatted as String. Fast alternative to get_string_from_utf8(), assuming the content is ASCII-only (unlike the UTF-8 function, this function maps every byte to a character in the string, so any multibyte sequence will be torn apart).
 			</description>
 		</method>
 		<method name="get_string_from_utf8">
 			<return type="String">
 			</return>
 			<description>
+			Returns a copy of the array's contents formatted as String, assuming the array is formatted as UTF-8. Slower than get_string_from_ascii(), but works for UTF-8. Usually you should prefer this function over get_string_from_ascii() to support international input.
 			</description>
 		</method>
 		<method name="push_back">
@@ -26252,6 +26614,18 @@
 			<description>
 			</description>
 		</method>
+		<method name="set_type_mask">
+			<argument index="0" name="mask" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="get_type_mask" qualifiers="const">
+			<return type="int">
+			</return>
+			<description>
+			</description>
+		</method>
 	</methods>
 	<constants>
 	</constants>
@@ -26283,19 +26657,21 @@
 	Ray 2D shape resource for physics.
 	</brief_description>
 	<description>
-	Ray 2D shape resource for physics. A ray is not really a collision body, isntead it tries to separate itself from whatever is touching its far endpoint. It's often useful for ccharacters.
+	Ray 2D shape resource for physics. A ray is not really a collision body, isntead it tries to separate itself from whatever is touching its far endpoint. It's often useful for characters.
 	</description>
 	<methods>
 		<method name="set_length">
 			<argument index="0" name="length" type="float">
 			</argument>
 			<description>
+			Set the length of the ray.
 			</description>
 		</method>
 		<method name="get_length" qualifiers="const">
 			<return type="float">
 			</return>
 			<description>
+			Return the length of the ray.
 			</description>
 		</method>
 	</methods>
@@ -26358,8 +26734,10 @@
 </class>
 <class name="Rect2" category="Built-In Types">
 	<brief_description>
+	2D Axis-aligned bounding box.
 	</brief_description>
 	<description>
+	Rect2 provides an 2D Axis-Aligned Bounding Box. It consists of a position, a size, and several utility functions. It is typically used for fast overlap tests.
 	</description>
 	<methods>
 		<method name="clip">
@@ -26368,6 +26746,7 @@
 			<argument index="0" name="b" type="Rect2">
 			</argument>
 			<description>
+			Returns the intersection of this [Rect2] and b.
 			</description>
 		</method>
 		<method name="encloses">
@@ -26376,6 +26755,7 @@
 			<argument index="0" name="b" type="Rect2">
 			</argument>
 			<description>
+			Returns true if this [Rect2] completely encloses another one.
 			</description>
 		</method>
 		<method name="expand">
@@ -26384,12 +26764,14 @@
 			<argument index="0" name="to" type="Vector2">
 			</argument>
 			<description>
+			Return this [Rect2] expanded to include a given point.
 			</description>
 		</method>
 		<method name="get_area">
 			<return type="float">
 			</return>
 			<description>
+			Get the area of the [Rect2].
 			</description>
 		</method>
 		<method name="grow">
@@ -26398,12 +26780,14 @@
 			<argument index="0" name="by" type="float">
 			</argument>
 			<description>
+			Return a copy of the [Rect2] grown a given amount of units towards all the sides.
 			</description>
 		</method>
 		<method name="has_no_area">
 			<return type="bool">
 			</return>
 			<description>
+			Return true if the [Rect2] is flat or empty.
 			</description>
 		</method>
 		<method name="has_point">
@@ -26412,6 +26796,7 @@
 			<argument index="0" name="point" type="Vector2">
 			</argument>
 			<description>
+			Return true if the [Rect2] contains a point.
 			</description>
 		</method>
 		<method name="intersects">
@@ -26420,6 +26805,7 @@
 			<argument index="0" name="b" type="Rect2">
 			</argument>
 			<description>
+			Return true if the [Rect2] overlaps with another.
 			</description>
 		</method>
 		<method name="merge">
@@ -26428,6 +26814,7 @@
 			<argument index="0" name="b" type="Rect2">
 			</argument>
 			<description>
+			Combine this [Rect2] with another, a larger one is returned that contains both.
 			</description>
 		</method>
 		<method name="Rect2">
@@ -26438,6 +26825,7 @@
 			<argument index="1" name="size" type="Vector2">
 			</argument>
 			<description>
+			Construct a [Rect2] by position and size.
 			</description>
 		</method>
 		<method name="Rect2">
@@ -26452,6 +26840,7 @@
 			<argument index="3" name="height" type="float">
 			</argument>
 			<description>
+			Construct a [Rect2] by x, y, width and height.
 			</description>
 		</method>
 	</methods>
@@ -26527,7 +26916,7 @@
 	Reference frame for GUI.
 	</brief_description>
 	<description>
-	Reference frame for GUI. It's just like an empty control, except a red box is displayed while editing around it's size at all times.
+	Reference frame for GUI. It's just like an empty control, except a red box is displayed while editing around its size at all times.
 	</description>
 	<methods>
 	</methods>
@@ -26540,14 +26929,35 @@
 </class>
 <class name="RegEx" inherits="Reference" category="Core">
 	<brief_description>
+	Simple regular expression matcher.
 	</brief_description>
 	<description>
+	Class for finding text patterns in a string using regular expressions. Regular expressions are a way to define patterns of text to be searched.
+	This class only finds patterns in a string. It can not perform replacements.
+	Usage of regular expressions is too long to be explained here, but Internet is full of tutorials and detailed explanations.
+	Currently supported features:
+		Capturing [code]()[/code] and non-capturing [code](?:)[/code] groups
+		Any character [code].[/code]
+		Shorthand caracter classes [code]\w \W \s \S \d \D[/code]
+		User-defined character classes such as [code][A-Za-z][/code]
+		Simple quantifiers [code]?[/code], [code]*[/code] and [code]+[/code]
+		Range quantifiers [code]{x,y}[/code]
+		Lazy (non-greedy) quantifiers [code]*?[/code]
+		Begining [code]^[/code] and end [code]$[/code] anchors
+		Alternation [code]|[/code]
+		Backreferences [code]\1[/code] to [code]\9[/code]
+		POSIX character classes [code][[:alnum:]][/code]
+		Lookahead [code](?=)[/code], [code](?!)[/code] and lookbehind [code](?&lt;=)[/code], [code](?&lt;!)[/code]
+		ASCII [code]\xFF[/code] and Unicode [code]\uFFFF[/code] code points (in a style similar to Python)
+		Word boundaries [code]\b[/code], [code]\B[/code]
 	</description>
 	<methods>
 		<method name="compile">
 			<return type="int">
 			</return>
 			<argument index="0" name="pattern" type="String">
+			</argument>
+			<argument index="1" name="expanded" type="bool" default="true">
 			</argument>
 			<description>
 			</description>
@@ -26562,22 +26972,26 @@
 			<argument index="2" name="end" type="int" default="-1">
 			</argument>
 			<description>
+			This method tries to find the pattern within the string, and returns the position where it was found. It also stores any capturing group (see [method get_capture]) for further retrieval.
 			</description>
 		</method>
 		<method name="clear">
 			<description>
+			This method resets the state of the object, as it was freshly created. Namely, it unassigns the regular expression of this object, and forgets all captures made by the last [method find].
 			</description>
 		</method>
 		<method name="is_valid" qualifiers="const">
 			<return type="bool">
 			</return>
 			<description>
+			Returns whether this object has a valid regular expression assigned.
 			</description>
 		</method>
 		<method name="get_capture_count" qualifiers="const">
 			<return type="int">
 			</return>
 			<description>
+			Returns the number of capturing groups. A captured group is the part of a string that matches a part of the pattern delimited by parentheses (unless they are non-capturing parentheses [i](?:)[/i]).
 			</description>
 		</method>
 		<method name="get_capture" qualifiers="const">
@@ -26586,12 +27000,14 @@
 			<argument index="0" name="capture" type="int">
 			</argument>
 			<description>
+			Returns a captured group. A captured group is the part of a string that matches a part of the pattern delimited by parentheses (unless they are non-capturing parentheses [i](?:)[/i]).
 			</description>
 		</method>
 		<method name="get_captures" qualifiers="const">
 			<return type="StringArray">
 			</return>
 			<description>
+			Return a list of all the captures made by the regular expression.
 			</description>
 		</method>
 	</methods>
@@ -27122,6 +27538,12 @@
 			<description>
 			</description>
 		</method>
+		<method name="scroll_to_line">
+			<argument index="0" name="arg0" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
 		<method name="set_tab_size">
 			<argument index="0" name="spaces" type="int">
 			</argument>
@@ -27567,7 +27989,7 @@
 	Rigid body 2D node.
 	</brief_description>
 	<description>
-	Rigid body 2D node. This node is used for placing rigid bodies in the scene. It can contain a number of shapes, and also shift state between regular Rigid Body to Character or even Static. 
+	Rigid body 2D node. This node is used for placing rigid bodies in the scene. It can contain a number of shapes, and also shift state between regular Rigid Body to Character or even Static.
 	Character mode forbids the node from being rotated. This node can have a custom force integrator function, for writing complex physics motion behavior per node.
 	As a warning, don't change this node position every frame or very often. Sporadic changes work fine, but physics runs at a different granularity (fixed hz) than usual rendering (process callback) and maybe even in a separate thread, so changing this from a process loop will yield strange behavior.
 	</description>
@@ -29138,8 +29560,10 @@
 </class>
 <class name="ScrollContainer" inherits="Container" category="Core">
 	<brief_description>
+	A helper node for displaying scollable elements (e.g. lists).
 	</brief_description>
 	<description>
+	A ScrollContainer node with a [Control] child and scrollbar child ([HScrollbar], [VScrollBar], or both) will only draw the Control within the ScrollContainer area.  Scrollbars will automatically be drawn at the right (for vertical) or bottom (for horizontal) and will enable dragging to move the viewable Control (and its children) within the ScrollContainer.  Scrollbars will also automatically resize the grabber based on the minimum_size of the Control relative to the ScrollContainer.  Works great with a [Panel] control.
 	</description>
 	<methods>
 		<method name="set_enable_h_scroll">
@@ -29206,24 +29630,28 @@
 			<argument index="0" name="a" type="Vector2">
 			</argument>
 			<description>
+			Set the first point's position.
 			</description>
 		</method>
 		<method name="get_a" qualifiers="const">
 			<return type="Vector2">
 			</return>
 			<description>
+			Return the first point's position.
 			</description>
 		</method>
 		<method name="set_b">
 			<argument index="0" name="b" type="Vector2">
 			</argument>
 			<description>
+			Set the second point's position.
 			</description>
 		</method>
 		<method name="get_b" qualifiers="const">
 			<return type="Vector2">
 			</return>
 			<description>
+			Return the second point's position.
 			</description>
 		</method>
 	</methods>
@@ -29402,6 +29830,28 @@
 			<return type="Array">
 			</return>
 			<argument index="0" name="shader_type" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="default_set_value">
+			<argument index="0" name="shader_type" type="int">
+			</argument>
+			<argument index="1" name="id" type="int">
+			</argument>
+			<argument index="2" name="param_id" type="int">
+			</argument>
+			<argument index="3" name="value" type="var">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="default_get_value">
+			<argument index="0" name="shader_type" type="int">
+			</argument>
+			<argument index="1" name="id" type="int">
+			</argument>
+			<argument index="2" name="param_id" type="int">
 			</argument>
 			<description>
 			</description>
@@ -30249,13 +30699,14 @@
 			</argument>
 			<description>
 			Use a custom solver bias. No need to change this unless you really know what you are doing.
+			The solver bias is a factor controlling how much two objects "rebound" off each other, when colliding, to avoid them getting into each other because of numerical imprecision.
 			</description>
 		</method>
 		<method name="get_custom_solver_bias" qualifiers="const">
 			<return type="float">
 			</return>
 			<description>
-			Return the custom solver bias. No need to change this unless you really know what you are doing.
+			Return the custom solver bias.
 			</description>
 		</method>
 		<method name="collide">
@@ -30268,6 +30719,8 @@
 			<argument index="2" name="shape_xform" type="Matrix32">
 			</argument>
 			<description>
+			Return whether this shape is colliding with another.
+			This method needs the transformation matrix for this shape ([code]local_xform[/code]), the shape to check collisions with ([code]with_shape[/code]), and the transformation matrix of that shape ([code]shape_xform[/code]).
 			</description>
 		</method>
 		<method name="collide_with_motion">
@@ -30284,6 +30737,8 @@
 			<argument index="4" name="shape_motion" type="Vector2">
 			</argument>
 			<description>
+			Return whether this shape would collide with another, if a given movemen was applied.
+			This method needs the transformation matrix for this shape ([code]local_xform[/code]), the movement to test on this shape ([code]local_motion[/code]), the shape to check collisions with ([code]with_shape[/code]), the transformation matrix of that shape ([code]shape_xform[/code]), and the movement to test ont the other object ([code]shape_motion[/code]).
 			</description>
 		</method>
 		<method name="collide_and_get_contacts">
@@ -30294,6 +30749,8 @@
 			<argument index="2" name="shape_xform" type="Matrix32">
 			</argument>
 			<description>
+			Return a list of the points where this shape touches another. If there are no collisions, the list is empty.
+			This method needs the transformation matrix for this shape ([code]local_xform[/code]), the shape to check collisions with ([code]with_shape[/code]), and the transformation matrix of that shape ([code]shape_xform[/code]).
 			</description>
 		</method>
 		<method name="collide_with_motion_and_get_contacts">
@@ -30308,6 +30765,8 @@
 			<argument index="4" name="shape_motion" type="Vector2">
 			</argument>
 			<description>
+			Return a list of the points where this shape would touch another, if a given movement was applied. If there are no collisions, the list is empty.
+			This method needs the transformation matrix for this shape ([code]local_xform[/code]), the movement to test on this shape ([code]local_motion[/code]), the shape to check collisions with ([code]with_shape[/code]), the transformation matrix of that shape ([code]shape_xform[/code]), and the movement to test ont the other object ([code]shape_motion[/code]).
 			</description>
 		</method>
 	</methods>
@@ -31579,7 +32038,7 @@
 			<argument index="0" name="modulate" type="Color">
 			</argument>
 			<description>
-			Set color modulation for the sprite. All sprite pixels are multiplied by this color.
+			Set color modulation for the sprite. All sprite pixels are multiplied by this color.  Color may contain rgb values above 1 to achieve a highlight effect.
 			</description>
 		</method>
 		<method name="get_modulate" qualifiers="const">
@@ -32696,9 +33155,10 @@
 			</description>
 		</method>
 		<method name="to_ascii">
-			<return type="String">
+			<return type="RawArray">
 			</return>
 			<description>
+			Convert the String (which is a character array) to RawArray (which is an array of bytes). The conversion is speeded up in comparison to to_utf8() with the assumption that all the characters the String contains are only ASCII characters.
 			</description>
 		</method>
 		<method name="to_float">
@@ -32730,9 +33190,10 @@
 			</description>
 		</method>
 		<method name="to_utf8">
-			<return type="String">
+			<return type="RawArray">
 			</return>
 			<description>
+			Convert the String (which is an array of characters) to RawArray (which is an array of bytes). The conversion is a bit slower than to_ascii(), but supports all UTF-8 characters. Therefore, you should prefer this function over to_ascii().
 			</description>
 		</method>
 		<method name="xml_escape">
@@ -33509,6 +33970,12 @@
 		</method>
 	</methods>
 	<signals>
+		<signal name="tab_close">
+			<argument index="0" name="tab" type="int">
+			</argument>
+			<description>
+			</description>
+		</signal>
 		<signal name="right_button_pressed">
 			<argument index="0" name="tab" type="int">
 			</argument>
@@ -33528,6 +33995,14 @@
 		<constant name="ALIGN_CENTER" value="1">
 		</constant>
 		<constant name="ALIGN_RIGHT" value="2">
+		</constant>
+		<constant name="SHOW_ACTIVE_ONLY" value="1">
+		</constant>
+		<constant name="SHOW_ALWAYS" value="0">
+		</constant>
+		<constant name="SHOW_HOVER" value="2">
+		</constant>
+		<constant name="SHOW_NEVER" value="3">
 		</constant>
 	</constants>
 	<theme_items>
@@ -33615,15 +34090,17 @@
 		<method name="cursor_set_column">
 			<argument index="0" name="column" type="int">
 			</argument>
+			<argument index="1" name="arg1" type="bool">
+			</argument>
 			<description>
-			Set the current column of the text editor.
 			</description>
 		</method>
 		<method name="cursor_set_line">
 			<argument index="0" name="line" type="int">
 			</argument>
+			<argument index="1" name="arg1" type="bool">
+			</argument>
 			<description>
-			Set the current line of the text editor.
 			</description>
 		</method>
 		<method name="cursor_get_column" qualifiers="const">
@@ -34222,8 +34699,68 @@
 			<description>
 			</description>
 		</method>
+		<method name="set_fill_mode">
+			<argument index="0" name="mode" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="get_fill_mode">
+			<return type="int">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="set_radial_initial_angle">
+			<argument index="0" name="mode" type="float">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="get_radial_initial_angle">
+			<return type="float">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="set_radial_center_offset">
+			<argument index="0" name="mode" type="Vector2">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="get_radial_center_offset">
+			<return type="Vector2">
+			</return>
+			<description>
+			</description>
+		</method>
+		<method name="set_fill_degrees">
+			<argument index="0" name="mode" type="float">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="get_fill_degrees">
+			<return type="float">
+			</return>
+			<description>
+			</description>
+		</method>
 	</methods>
 	<constants>
+		<constant name="FILL_LEFT_TO_RIGHT" value="0">
+		</constant>
+		<constant name="FILL_RIGHT_TO_LEFT" value="1">
+		</constant>
+		<constant name="FILL_TOP_TO_BOTTOM" value="2">
+		</constant>
+		<constant name="FILL_BOTTOM_TO_TOP" value="3">
+		</constant>
+		<constant name="FILL_CLOCKWISE" value="4">
+		</constant>
+		<constant name="FILL_COUNTER_CLOCKWISE" value="5">
+		</constant>
 	</constants>
 </class>
 <class name="Theme" inherits="Resource" category="Core">
@@ -35819,6 +36356,18 @@
 			<description>
 			</description>
 		</method>
+		<method name="set_hide_folding">
+			<argument index="0" name="hide" type="bool">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="is_folding_hidden" qualifiers="const">
+			<return type="bool">
+			</return>
+			<description>
+			</description>
+		</method>
 	</methods>
 	<signals>
 		<signal name="item_activated">
@@ -36971,6 +37520,14 @@
 	<description>
 	</description>
 	<methods>
+		<method name="angle">
+			<return type="float">
+			</return>
+			<description>
+			Returns the result of atan2 when called with the Vector's x and y as parameters (Math::atan2(x,y)).
+			Be aware that it therefore returns an angle oriented clockwise with regard to the (0, 1) unit vector, and not an angle oriented counter-clockwise with regard to the (1, 0) unit vector (which would be the typical trigonometric representation of the angle when calling Math::atan2(y,x)).
+			</description>
+		</method>
 		<method name="angle_to">
 			<return type="float">
 			</return>
@@ -36987,13 +37544,6 @@
 			</argument>
 			<description>
 			Returns the angle in radians between the line connecting the two points and the x coordinate.
-			</description>
-		</method>
-		<method name="atan2">
-			<return type="float">
-			</return>
-			<description>
-			Returns the result of atan2 when called with the Vector's x and y as parameters.
 			</description>
 		</method>
 		<method name="cubic_interpolate">
@@ -37096,7 +37646,7 @@
 			<argument index="0" name="vec" type="Vector2">
 			</argument>
 			<description>
-			Reflects/mirrors the vector around another vector.
+			Like "slide", but reflects the Vector instead of continuing along the wall.
 			</description>
 		</method>
 		<method name="rotated">
@@ -37160,10 +37710,10 @@
 </class>
 <class name="Vector2Array" category="Built-In Types">
 	<brief_description>
-	An Array of Vector2's.
+	An Array of Vector2.
 	</brief_description>
 	<description>
-	An Array specifically designed to hold Vector2's.
+	An Array specifically designed to hold Vector2.
 	</description>
 	<methods>
 		<method name="get">
@@ -37172,21 +37722,21 @@
 			<argument index="0" name="idx" type="int">
 			</argument>
 			<description>
-			Get the Vector2 at the given index.
+			Returns the Vector2 at the given index.
 			</description>
 		</method>
 		<method name="push_back">
 			<argument index="0" name="vector2" type="Vector2">
 			</argument>
 			<description>
-			Insert a new Vector2.
+			Inserts a Vector2 at the end.
 			</description>
 		</method>
 		<method name="resize">
 			<argument index="0" name="idx" type="int">
 			</argument>
 			<description>
-			Set the size of the Vector2Array. If larger than the current size it will reserve some space beforehand, and if it is smaller it will cut off the array.
+			Sets the size of the Vector2Array. If larger than the current size it will reserve some space beforehand, and if it is smaller it will cut off the array.
 			</description>
 		</method>
 		<method name="set">
@@ -37195,7 +37745,7 @@
 			<argument index="1" name="vector2" type="Vector2">
 			</argument>
 			<description>
-			Set the Vector2 at the given index.
+			Changes the Vector2 at the given index.
 			</description>
 		</method>
 		<method name="size">
@@ -37223,13 +37773,21 @@
 	Vector class, which performs basic 3D vector math operations.
 	</brief_description>
 	<description>
-	Vector3 is one of the core classes of the engine, and includes several built-in helper functions to perform basic vecor math operations.
+	Vector3 is one of the core classes of the engine, and includes several built-in helper functions to perform basic vector math operations.
 	</description>
 	<methods>
 		<method name="abs">
 			<return type="Vector3">
 			</return>
 			<description>
+			Returns a new vector with all components in absolute values (e.g. positive).
+			</description>
+		</method>
+		<method name="ceil">
+			<return type="Vector3">
+			</return>
+			<description>
+			Returns a new vector with all components rounded up.
 			</description>
 		</method>
 		<method name="cross">
@@ -37253,7 +37811,7 @@
 			<argument index="3" name="t" type="float">
 			</argument>
 			<description>
-			Perform a cubic interpolation between vectors a,b,c,d (b is current), by the given amount (i).
+			Perform a cubic interpolation between vectors pre_a, a, b, post_b (a is current), by the given amount (t).
 			</description>
 		</method>
 		<method name="distance_squared_to">
@@ -37262,7 +37820,7 @@
 			<argument index="0" name="b" type="Vector3">
 			</argument>
 			<description>
-			Return the squared distance (distance minus the last square root) to b.
+			Return the squared distance (distance minus the last square root) to b. Prefer this function over distance_to if you need to sort vectors or need the squared distance for some formula.
 			</description>
 		</method>
 		<method name="distance_to">
@@ -37283,11 +37841,18 @@
 			Return the dot product with b.
 			</description>
 		</method>
+		<method name="floor">
+			<return type="Vector3">
+			</return>
+			<description>
+			Returns a new vector with all components rounded down.
+			</description>
+		</method>
 		<method name="inverse">
 			<return type="Vector3">
 			</return>
 			<description>
-			Returns the inverse of the vector. this is the same as Vector3( 1.0 / v.x, 1.0 / v.y, 1.0 / v.z )
+			Returns the inverse of the vector. This is the same as Vector3( 1.0 / v.x, 1.0 / v.y, 1.0 / v.z )
 			</description>
 		</method>
 		<method name="length">
@@ -37301,7 +37866,7 @@
 			<return type="float">
 			</return>
 			<description>
-			Return the length of the vector, squared.
+			Return the length of the vector, squared. Prefer this function over "length" if you need to sort vectors or need the squared length for some formula.
 			</description>
 		</method>
 		<method name="linear_interpolate">
@@ -37312,26 +37877,28 @@
 			<argument index="1" name="t" type="float">
 			</argument>
 			<description>
-			Linearly interpolates the vector to a given one (b), by the given amount (i).
+			Linearly interpolates the vector to a given one (b), by the given amount (t).
 			</description>
 		</method>
 		<method name="max_axis">
 			<return type="int">
 			</return>
 			<description>
+			Returns AXIS_X, AXIS_Y or AXIS_Z depending on which axis is the largest.
 			</description>
 		</method>
 		<method name="min_axis">
 			<return type="int">
 			</return>
 			<description>
+			Returns AXIS_X, AXIS_Y or AXIS_Z depending on which axis is the smallest.
 			</description>
 		</method>
 		<method name="normalized">
 			<return type="Vector3">
 			</return>
 			<description>
-			Return a copy of the normalized vector to unit length. This is the same as v / v.length()
+			Return a copy of the normalized vector to unit length. This is the same as v / v.length().
 			</description>
 		</method>
 		<method name="reflect">
@@ -37340,6 +37907,7 @@
 			<argument index="0" name="by" type="Vector3">
 			</argument>
 			<description>
+			Like "slide", but reflects the Vector instead of continuing along the wall.
 			</description>
 		</method>
 		<method name="rotated">
@@ -37350,6 +37918,7 @@
 			<argument index="1" name="phi" type="float">
 			</argument>
 			<description>
+			Rotates the vector around some axis by phi radians.
 			</description>
 		</method>
 		<method name="slide">
@@ -37358,6 +37927,7 @@
 			<argument index="0" name="by" type="Vector3">
 			</argument>
 			<description>
+			Slides the vector along a wall.
 			</description>
 		</method>
 		<method name="snapped">
@@ -37379,6 +37949,7 @@
 			<argument index="2" name="z" type="float">
 			</argument>
 			<description>
+			Returns a Vector3 with the given components.
 			</description>
 		</method>
 	</methods>
@@ -37392,17 +37963,22 @@
 	</members>
 	<constants>
 		<constant name="AXIS_X" value="0">
+			Enumerated value for the X axis. Returned by functions like max_axis or min_axis.
 		</constant>
 		<constant name="AXIS_Y" value="1">
+			Enumerated value for the Y axis.
 		</constant>
 		<constant name="AXIS_Z" value="2">
+			Enumerated value for the Z axis.
 		</constant>
 	</constants>
 </class>
 <class name="Vector3Array" category="Built-In Types">
 	<brief_description>
+	An Array of Vector3.
 	</brief_description>
 	<description>
+	An Array specifically designed to hold Vector3.
 	</description>
 	<methods>
 		<method name="get">
@@ -37411,18 +37987,21 @@
 			<argument index="0" name="idx" type="int">
 			</argument>
 			<description>
+			Returns the Vector3 at the given index.
 			</description>
 		</method>
 		<method name="push_back">
 			<argument index="0" name="vector3" type="Vector3">
 			</argument>
 			<description>
+			Inserts a Vector3 at the end.
 			</description>
 		</method>
 		<method name="resize">
 			<argument index="0" name="idx" type="int">
 			</argument>
 			<description>
+			Sets the size of the Vector3Array. If larger than the current size it will reserve some space beforehand, and if it is smaller it will cut off the array.
 			</description>
 		</method>
 		<method name="set">
@@ -37431,12 +38010,14 @@
 			<argument index="1" name="vector3" type="Vector3">
 			</argument>
 			<description>
+			Changes the Vector3 at the given index.
 			</description>
 		</method>
 		<method name="size">
 			<return type="int">
 			</return>
 			<description>
+			Returns the size of the array.
 			</description>
 		</method>
 		<method name="Vector3Array">
@@ -37445,6 +38026,7 @@
 			<argument index="0" name="from" type="Array">
 			</argument>
 			<description>
+			Constructs a new Vector3Array. Optionally, you can pass in an Array that will be converted.
 			</description>
 		</method>
 	</methods>
@@ -37719,6 +38301,18 @@
 			<description>
 			</description>
 		</method>
+		<method name="set_audio_track">
+			<argument index="0" name="track" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="get_audio_track" qualifiers="const">
+			<return type="int">
+			</return>
+			<description>
+			</description>
+		</method>
 		<method name="get_stream_name" qualifiers="const">
 			<return type="String">
 			</return>
@@ -37755,6 +38349,18 @@
 			<description>
 			</description>
 		</method>
+		<method name="set_buffering_msec">
+			<argument index="0" name="msec" type="int">
+			</argument>
+			<description>
+			</description>
+		</method>
+		<method name="get_buffering_msec" qualifiers="const">
+			<return type="int">
+			</return>
+			<description>
+			</description>
+		</method>
 	</methods>
 	<constants>
 	</constants>
@@ -37765,30 +38371,16 @@
 	<description>
 	</description>
 	<methods>
-		<method name="get_pending_frame_count" qualifiers="const">
-			<return type="int">
-			</return>
-			<description>
-			</description>
-		</method>
-		<method name="pop_frame">
-			<argument index="0" name="arg0" type="Object">
-			</argument>
-			<description>
-			</description>
-		</method>
-		<method name="peek_frame" qualifiers="const">
-			<return type="Image">
-			</return>
-			<description>
-			</description>
-		</method>
-		<method name="set_audio_track">
-			<argument index="0" name="idx" type="int">
-			</argument>
-			<description>
-			</description>
-		</method>
+	</methods>
+	<constants>
+	</constants>
+</class>
+<class name="VideoStreamTheora" inherits="VideoStream" category="Core">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<methods>
 	</methods>
 	<constants>
 	</constants>
