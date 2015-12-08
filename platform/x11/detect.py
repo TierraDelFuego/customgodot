@@ -53,7 +53,7 @@ def get_opts():
 	('use_llvm','Use llvm compiler','no'),
 	('use_sanitizer','Use llvm compiler sanitize address','no'),
 	('use_leak_sanitizer','Use llvm compiler sanitize memory leaks','no'),
-	('pulseaudio','Detect & Use pulseaudio','yes'),
+	('pulseaudio','Detect & Use pulseaudio','no'),
 	('new_wm_api', 'Use experimental window management API','no'),
 	('debug_release', 'Add debug symbols to release version','no'),
 	]
@@ -152,7 +152,7 @@ def configure(env):
 	if (env["pulseaudio"]=="yes"):
 		if not os.system("pkg-config --exists libpulse-simple"):
 			print("Enabling PulseAudio")
-			env.Append(CPPFLAGS=["-DPULSEAUDIO_ENABLED"])
+			#env.Append(CPPFLAGS=["-DPULSEAUDIO_ENABLED"])
 			env.ParseConfig('pkg-config --cflags --libs libpulse-simple')
 		else:
 			print("PulseAudio development libraries not found, disabling driver")
