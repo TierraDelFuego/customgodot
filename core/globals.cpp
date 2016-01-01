@@ -5,7 +5,7 @@
 /*                           GODOT ENGINE                                */
 /*                    http://www.godotengine.org                         */
 /*************************************************************************/
-/* Copyright (c) 2007-2015 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2007-2016 Juan Linietsky, Ariel Manzur.                 */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -304,6 +304,7 @@ Error Globals::setup(const String& p_path,const String & p_main_pack) {
 
 		return OK;
 	}
+
 	if (OS::get_singleton()->get_resource_dir()!="") {
         //OS will call Globals->get_resource_path which will be empty if not overriden!
 		//if the OS would rather use somewhere else, then it will not be empty.

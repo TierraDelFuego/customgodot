@@ -5,7 +5,7 @@
 /*                           GODOT ENGINE                                */
 /*                    http://www.godotengine.org                         */
 /*************************************************************************/
-/* Copyright (c) 2007-2015 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2007-2016 Juan Linietsky, Ariel Manzur.                 */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -394,8 +394,7 @@ void Body2DSW::_compute_area_gravity_and_dampenings(const Area2DSW *p_area) {
 	}
 
 	area_linear_damp += p_area->get_linear_damp();
-	area_angular_damp += p_area->get_angular_damp();
-	printf("%f\n",gravity.y);
+	area_angular_damp += p_area->get_angular_damp();	
 }
 
 void Body2DSW::integrate_forces(real_t p_step) {

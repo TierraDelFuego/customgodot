@@ -5,7 +5,7 @@
 /*                           GODOT ENGINE                                */
 /*                    http://www.godotengine.org                         */
 /*************************************************************************/
-/* Copyright (c) 2007-2015 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2007-2016 Juan Linietsky, Ariel Manzur.                 */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -1156,6 +1156,10 @@ Error GDCompiler::_parse_block(CodeGen& codegen,const GDParser::BlockNode *p_blo
 				codegen.opcodes.push_back(GDFunction::OPCODE_ASSERT);
 				codegen.opcodes.push_back(ret);
 			} break;
+			case GDParser::Node::TYPE_BREAKPOINT: {
+				// try subblocks
+				codegen.opcodes.push_back(GDFunction::OPCODE_BREAKPOINT);
+			} break;
 			case GDParser::Node::TYPE_LOCAL_VAR: {
 
 
@@ -1214,7 +1218,7 @@ Error GDCompiler::_parse_function(GDScript *p_script,const GDParser::ClassNode *
 
 	bool is_initializer=!p_for_ready && !p_func;
 
-	if (is_initializer || String(p_func->name)=="_init") {
+	if (is_initializer || (p_func && String(p_func->name)=="_init")) {
 		//parse initializer for class members
 		if (!p_func && p_class->extends_used && p_script->native.is_null()){
 

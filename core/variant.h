@@ -5,7 +5,7 @@
 /*                           GODOT ENGINE                                */
 /*                    http://www.godotengine.org                         */
 /*************************************************************************/
-/* Copyright (c) 2007-2015 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2007-2016 Juan Linietsky, Ariel Manzur.                 */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -425,7 +425,7 @@ public:
 	typedef String (*ObjectDeConstruct)(const Variant& p_object,void *ud);
 	typedef void (*ObjectConstruct)(const String& p_text,void *ud,Variant& r_value);
 
-	String get_construct_string(ObjectDeConstruct p_obj_deconstruct=NULL,void *p_deconstruct_ud=NULL) const;
+	String get_construct_string() const;
 	static void construct_from_string(const String& p_string,Variant& r_value,ObjectConstruct p_obj_construct=NULL,void *p_construct_ud=NULL);
 
 	void operator=(const Variant& p_variant); // only this is enough for all the other types

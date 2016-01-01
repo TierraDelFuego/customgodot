@@ -5,7 +5,7 @@
 /*                           GODOT ENGINE                                */
 /*                    http://www.godotengine.org                         */
 /*************************************************************************/
-/* Copyright (c) 2007-2015 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2007-2016 Juan Linietsky, Ariel Manzur.                 */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -166,9 +166,11 @@ void CanvasItemEditor::_edit_set_pivot(const Vector2& mouse_pos) {
 			Vector2 offset = n2d->edit_get_pivot();
 			Vector2 gpos = n2d->get_global_pos();
 
-			Vector2 motion_ofs = gpos-mouse_pos;
+			Vector2 local_mouse_pos = n2d->get_canvas_transform().affine_inverse().xform(mouse_pos);
 
-			undo_redo->add_do_method(n2d,"set_global_pos",mouse_pos);
+			Vector2 motion_ofs = gpos-local_mouse_pos;
+
+			undo_redo->add_do_method(n2d,"set_global_pos",local_mouse_pos);
 			undo_redo->add_do_method(n2d,"edit_set_pivot",offset+n2d->get_global_transform().affine_inverse().basis_xform(motion_ofs));
 			undo_redo->add_undo_method(n2d,"set_global_pos",gpos);
 			undo_redo->add_undo_method(n2d,"edit_set_pivot",offset);

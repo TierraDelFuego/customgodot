@@ -5,7 +5,7 @@
 /*                           GODOT ENGINE                                */
 /*                    http://www.godotengine.org                         */
 /*************************************************************************/
-/* Copyright (c) 2007-2015 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2007-2016 Juan Linietsky, Ariel Manzur.                 */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -773,7 +773,7 @@ void CanvasItem::draw_set_transform(const Point2& p_offset, float p_rot, const S
 
 	Matrix32 xform(p_rot,p_offset);
 	xform.scale_basis(p_scale);
-	VisualServer::get_singleton()->canvas_item_set_transform(canvas_item,xform);
+	VisualServer::get_singleton()->canvas_item_add_set_transform(canvas_item,xform);
 }
 
 void CanvasItem::draw_polygon(const Vector<Point2>& p_points, const Vector<Color>& p_colors,const Vector<Point2>& p_uvs, Ref<Texture> p_texture) {

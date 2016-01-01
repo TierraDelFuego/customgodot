@@ -5,7 +5,7 @@
 /*                           GODOT ENGINE                                */
 /*                    http://www.godotengine.org                         */
 /*************************************************************************/
-/* Copyright (c) 2007-2015 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2007-2016 Juan Linietsky, Ariel Manzur.                 */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -98,6 +98,7 @@ const char* GDTokenizer::token_names[TK_MAX]={
 "assert",
 "yield",
 "signal",
+"breakpoint",
 "'['",
 "']'",
 "'{'",
@@ -861,6 +862,7 @@ void GDTokenizerText::_advance() {
 								{TK_PR_ASSERT,"assert"},
 								{TK_PR_YIELD,"yield"},
 								{TK_PR_SIGNAL,"signal"},
+								{TK_PR_BREAKPOINT,"breakpoint"},
 								{TK_PR_CONST,"const"},
 								//controlflow
 								{TK_CF_IF,"if"},
@@ -1041,7 +1043,7 @@ void GDTokenizerText::advance(int p_amount) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#define BYTECODE_VERSION 6
+#define BYTECODE_VERSION 8
 
 Error GDTokenizerBuffer::set_code_buffer(const Vector<uint8_t> & p_buffer) {
 

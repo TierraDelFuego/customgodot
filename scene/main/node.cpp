@@ -5,7 +5,7 @@
 /*                           GODOT ENGINE                                */
 /*                    http://www.godotengine.org                         */
 /*************************************************************************/
-/* Copyright (c) 2007-2015 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2007-2016 Juan Linietsky, Ariel Manzur.                 */
 /*                                                                       */
 /* Permission is hereby granted, free of charge, to any person obtaining */
 /* a copy of this software and associated documentation files (the       */
@@ -802,6 +802,7 @@ void Node::remove_child(Node *p_child) {
 	}
 	
 	ERR_FAIL_COND( idx==-1 );
+	//ERR_FAIL_COND( p_child->data.blocked > 0 );
 
 	
 	//if (data.scene) { does not matter
